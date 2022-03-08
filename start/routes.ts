@@ -32,3 +32,7 @@ Route.get('/auth/google', async ({ ally }) => {
 Route.get('/auth/facebook', async ({ ally }) => {
   return ally.use('google').redirect
 })
+
+Route.group(() => {
+  Route.get('/', ()=> { return { msg: 'PetMate API v1' } })
+}).prefix('/api/v1/')
