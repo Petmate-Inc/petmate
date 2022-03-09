@@ -24,15 +24,14 @@ Route.get('/', async () => {
   return { hello: 'world' }
 })
 
-Route.get('/auth/google', async ({ ally }) => {
-  return ally.use('google').redirect
-})
-
-
-Route.get('/auth/facebook', async ({ ally }) => {
-  return ally.use('google').redirect
-})
-
 Route.group(() => {
   Route.get('/', ()=> { return { msg: 'PetMate API v1' } })
+
+  Route.get('/auth/google', async ({ ally }) => {
+    return ally.use('google').redirect
+  }) 
+
+  Route.get('/auth/facebook', async ({ ally }) => {
+    return ally.use('google').redirect
+  })
 }).prefix('/api/v1/')
