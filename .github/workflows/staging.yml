@@ -31,6 +31,6 @@ jobs:
           # This client-secret.json is converted by GCP_SA_KEY_STAGING_NEW.
           gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL_STAGING_NEW }} --key-file=client-secret.json
           gcloud config set project ${{ secrets.PROJECT_ID_STAGING_NEW }}
-          gcloud -q app deploy dev/app.yaml --promote
+          gcloud -q app deploy app.yaml --promote
           # Suppose you need a cron task.
           # gcloud -q app deploy cron.yaml
