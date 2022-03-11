@@ -65,7 +65,10 @@ jobs:
         run: |
           cp app.yaml build/app.yaml
 
-      
+      - name: CD into build folder
+        run: |
+          cd build
+          
       - name: Initialize Google Cloud SDK
         uses: zxyle/publish-gae-action@master
         with:
