@@ -1,6 +1,2 @@
 runtime: nodejs16
-<<<<<<< HEAD
 service: dev
-=======
-service: prod
->>>>>>> main
