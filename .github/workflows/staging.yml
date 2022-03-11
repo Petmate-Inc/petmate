@@ -19,7 +19,6 @@ jobs:
     steps:
       - name: node
         run: |
-          npm install
           yarn install
 
       - name: Create and populate .env file
