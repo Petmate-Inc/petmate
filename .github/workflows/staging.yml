@@ -64,7 +64,7 @@ jobs:
       - name: gcr.io/cloud-builders/gsutil
         run: |
           cp app.yaml build/app.yaml
-          
+
       - uses: actions/checkout@v1
       - name: Initialize Google Cloud SDK
         uses: zxyle/publish-gae-action@master
@@ -74,10 +74,7 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID_STAGING_NEW }}
           gae_variables: ${{ secrets.GAE_VARIABLES_STAGING_NEW }}
 
-      # Deploy application
-      - name: "gcr.io/cloud-builders/gcloud"
-        dir: "build"
-        args: ["app", "deploy"]         
+      # Deploy application     
       - name: Publish app to Google App Engine
         run: |
           # This client-secret.json is converted by GCP_SA_KEY_STAGING_NEW.
