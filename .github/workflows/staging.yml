@@ -17,9 +17,9 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - uses: actions/checkout@v1
       - name: node
         run: |
-          ls -l
           yarn install
 
       - name: Create and populate .env file
@@ -65,7 +65,7 @@ jobs:
         run: |
           cp app.yaml build/app.yaml
 
-      - uses: actions/checkout@v1
+      
       - name: Initialize Google Cloud SDK
         uses: zxyle/publish-gae-action@master
         with:
