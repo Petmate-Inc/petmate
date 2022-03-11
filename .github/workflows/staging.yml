@@ -17,6 +17,54 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: node
+        run: |
+          yarn install
+
+      - name: Create and populate .env file
+        env:
+          APP_KEY: ${{secrets.APP_KEY}}
+          DB_CONNECTION: ${{secrets.DB_CONNECTION}}
+          DRIVE_DISK: ${{secrets.DRIVE_DISK}}
+          FACEBOOK_CLIENT_ID: ${{secrets.FACEBOOK_CLIENT_ID}}
+          FACEBOOK_CLIENT_SECRET: ${{secrets.FACEBOOK_CLIENT_SECRET}}
+          GOOGLE_CLIENT_ID: ${{secrets.GOOGLE_CLIENT_ID}}
+          GOOGLE_CLIENT_SECRET: ${{secrets.GOOGLE_CLIENT_SECRET}}
+          HOST: ${{secrets.HOST}}
+          MYSQL_DB_NAME: ${{secrets.MYSQL_DB_NAME}}
+          MYSQL_HOST: ${{secrets.MYSQL_HOST}}
+          MYSQL_PORT: ${{secrets.MYSQL_PORT}}
+          MYSQL_USER: ${{secrets.MYSQL_USER}}
+          NODE_ENV: ${{secrets.NODE_ENV}}
+          PORT: ${{secrets.PORT}}
+        run: |
+          touch .env
+          echo APP_KEY="$APP_KEY" >> .env
+          echo DB_CONNECTION="$DB_CONNECTION" >> .env
+          echo DRIVE_DISK="$DRIVE_DISK" >> .env
+          echo FACEBOOK_CLIENT_ID="$FACEBOOK_CLIENT_ID" >> .env
+          echo FACEBOOK_CLIENT_SECRET="$FACEBOOK_CLIENT_SECRET" >> .env
+          echo GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" >> .env
+          echo GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" >> .env
+          echo HOST="$HOST" >> .env
+          echo MYSQL_DB_NAME="$MYSQL_DB_NAME" >> .env
+          echo MYSQL_HOST="$MYSQL_HOST" >> .env
+          echo MYSQL_PORT="$MYSQL_PORT" >> .env
+          echo MYSQL_USER="$MYSQL_USER" >> .env
+          echo NODE_ENV="$NODE_ENV" >> .env
+          echo PORT="$PORT" >> .env
+        shell: bash
+
+      # Run build script
+      - name: node
+        run: |
+          node ace build --production
+      
+      # Copy app.yaml into build folder
+      - name: gcr.io/cloud-builders/gsutil
+        run: |
+          cp app.yaml build/app.yaml
+          
       - uses: actions/checkout@v1
       - name: Initialize Google Cloud SDK
         uses: zxyle/publish-gae-action@master
@@ -26,6 +74,10 @@ jobs:
           project_id: ${{ secrets.PROJECT_ID_STAGING_NEW }}
           gae_variables: ${{ secrets.GAE_VARIABLES_STAGING_NEW }}
 
+      # Deploy application
+      - name: "gcr.io/cloud-builders/gcloud"
+        dir: "build"
+        args: ["app", "deploy"]         
       - name: Publish app to Google App Engine
         run: |
           # This client-secret.json is converted by GCP_SA_KEY_STAGING_NEW.
