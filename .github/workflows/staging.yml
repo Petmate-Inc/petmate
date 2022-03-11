@@ -65,10 +65,6 @@ jobs:
         run: |
           cp app.yaml build/app.yaml
 
-      - name: CD into build folder
-        run: |
-          cd build
-          
       - name: Initialize Google Cloud SDK
         uses: zxyle/publish-gae-action@master
         with:
@@ -81,8 +77,10 @@ jobs:
       - name: Publish app to Google App Engine
         run: |
           # This client-secret.json is converted by GCP_SA_KEY_STAGING_NEW.
+          cd build
+          ls -lah
           gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL_STAGING_NEW }} --key-file=client-secret.json
           gcloud config set project ${{ secrets.PROJECT_ID_STAGING_NEW }}
-          gcloud -q app deploy app.yaml --promote
+          gcloud -q app deploy app.yaml
           # Suppose you need a cron task.
           # gcloud -q app deploy cron.yaml
