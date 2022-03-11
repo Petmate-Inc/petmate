@@ -53,7 +53,6 @@ jobs:
           echo MYSQL_USER="$MYSQL_USER" >> .env
           echo NODE_ENV="$NODE_ENV" >> .env
           echo PORT="$PORT" >> .env
-        shell: bash
 
       # Run build script
       - name: node
