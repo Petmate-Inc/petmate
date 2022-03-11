@@ -19,7 +19,8 @@ jobs:
     steps:
       - name: node
         run: |
-          npm install
+          ls -l
+          yarn install
 
       - name: Create and populate .env file
         env:
@@ -57,7 +58,7 @@ jobs:
       # Run build script
       - name: node
         run: |
-          node ace build --production
+          yarn build
       
       # Copy app.yaml into build folder
       - name: gcr.io/cloud-builders/gsutil
