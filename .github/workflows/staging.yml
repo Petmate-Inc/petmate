@@ -83,27 +83,12 @@ jobs:
 
 
           cd build
-
-          touch .env
-          echo APP_KEY="$APP_KEY" >> .env
-          echo DB_CONNECTION="$DB_CONNECTION" >> .env
-          echo DRIVE_DISK="$DRIVE_DISK" >> .env
-          echo FACEBOOK_CLIENT_ID="$FACEBOOK_CLIENT_ID" >> .env
-          echo FACEBOOK_CLIENT_SECRET="$FACEBOOK_CLIENT_SECRET" >> .env
-          echo GOOGLE_CLIENT_ID="$GOOGLE_CLIENT_ID" >> .env
-          echo GOOGLE_CLIENT_SECRET="$GOOGLE_CLIENT_SECRET" >> .env
-          echo HOST="$HOST" >> .env
-          echo MYSQL_DB_NAME="$MYSQL_DB_NAME" >> .env
-          echo MYSQL_HOST="$MYSQL_HOST" >> .env
-          echo MYSQL_PORT="$MYSQL_PORT" >> .env
-          echo MYSQL_USER="$MYSQL_USER" >> .env
-          echo NODE_ENV="$NODE_ENV" >> .env
-          echo PORT="$PORT" >> .env
-          
           yarn install --production
+          cp ../.env .env
+          cat .env
           ls -lah
 
-
+          
           gcloud -q app deploy app.yaml
           # Suppose you need a cron task.
           # gcloud -q app deploy cron.yaml
