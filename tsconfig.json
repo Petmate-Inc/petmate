@@ -8,6 +8,7 @@
     "build"
   ],
   "compilerOptions": {
+    "experimentalDecorators": true,
     "outDir": "build",
     "rootDir": "./",
     "sourceMap": true,
@@ -30,7 +31,8 @@
       "@adonisjs/repl",
       "@adonisjs/lucid",
       "@adonisjs/auth",
-      "@adonisjs/ally"
+      "@adonisjs/ally",
+      "@adonisjs/mail"
     ]
   }
 }
