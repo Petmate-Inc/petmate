@@ -24,6 +24,7 @@ Route.group(() => {
 
   Route.group(() => {
     Route.get('details', 'UsersController.details')
+    Route.patch('/update-password', 'UsersController.updatePassword')
     Route.patch('/', 'UsersController.update')
   })
     .middleware('auth')

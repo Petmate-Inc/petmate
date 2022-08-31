@@ -17,6 +17,7 @@ import ResendOtpValidator from 'App/Validators/ResendOtpValidator'
 import Logger from '@ioc:Adonis/Core/Logger'
 import SendOtpValidator from 'App/Validators/SendOtpValidator'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
+import ChangePasswordValidator from 'App/Validators/ChangePasswordValidator'
 
 export default class AuthController {
   public async login({ auth, request, response }: HttpContextContract) {
@@ -256,31 +257,37 @@ export default class AuthController {
     }
   }
 
-  public async changePassword({ auth, request, response }: HttpContextContract) {
-    const user = auth.user
-    if (!user) {
-      return unauthorizedResponse({
+  public async updatePassword({ auth, request, response }: HttpContextContract) {
+    const { oldPassword, newPassword } = await request.validate(ChangePasswordValidator)
+
+    try {
+      const user = auth.user
+      if (!user) {
+        return unauthorizedResponse({
+          response,
+          message: 'Invalid user credentials',
+        })
+      }
+
+      const res = await auth.use('api').verifyCredentials(user.email, oldPassword)
+
+      if (!res) {
+        return unauthorizedResponse({
+          response,
+          message: 'Old password incorrect',
+        })
+      }
+
+      user.password = newPassword
+      await user.save()
+
+      return successfulResponse({
         response,
-        message: 'Invalid user credentials',
+        message: 'Password changed successfully.',
       })
+    } catch (error) {
+      return badRequestResponse({ response, message: 'failed to update password', error })
     }
-    const { oldPassword, newPassword } = request.all()
-    const res = await auth.use('api').verifyCredentials(user.email, oldPassword)
-
-    if (!res) {
-      return unauthorizedResponse({
-        response,
-        message: 'Old password incorrect',
-      })
-    }
-
-    user.password = newPassword
-    await user.save()
-
-    return successfulResponse({
-      response,
-      message: 'Password changed successfully.',
-    })
   }
 
   public async update({ auth, request, response }: HttpContextContract) {
