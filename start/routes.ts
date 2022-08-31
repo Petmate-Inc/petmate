@@ -1,24 +1,3 @@
-/*
-|--------------------------------------------------------------------------
-| Routes
-|--------------------------------------------------------------------------
-|
-| This file is dedicated for defining HTTP routes. A single file is enough
-| for majority of projects, however you can define routes in different
-| files and just make sure to import them inside this file. For example
-|
-| Define routes in following two files
-| ├── start/routes/cart.ts
-| ├── start/routes/customer.ts
-|
-| and then import them inside `start/routes.ts` as follows
-|
-| import './routes/cart'
-| import './routes/customer'
-|
-*/
-
-import { Router } from '@adonisjs/core/build/standalone'
 import Route from '@ioc:Adonis/Core/Route'
 
 const defaultMessage = {
@@ -41,8 +20,14 @@ Route.group(() => {
   Route.post('login', 'UsersController.login')
   Route.post('signup', 'UsersController.signup')
   Route.post('verify-email/:token', 'UsersController.verify')
-  Route.get('user/details', 'UsersController.details').middleware('auth')
   Route.post('resend-otp', 'UsersController.resendOtp')
+
+  Route.group(() => {
+    Route.get('details', 'UsersController.details')
+    Route.patch('/', 'UsersController.update')
+  })
+    .middleware('auth')
+    .prefix('user/')
 
   // social authentication
   Route.group(() => {

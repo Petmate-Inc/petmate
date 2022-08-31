@@ -4,13 +4,19 @@ import Database from '@ioc:Adonis/Lucid/Database'
 import User from 'App/Models/User'
 import { v4 as uuidv4 } from 'uuid'
 import Hash from '@ioc:Adonis/Core/Hash'
-import { successfulResponse, badResponse, unauthorizedResponse } from '../../Helpers/Responses'
+import {
+  successfulResponse,
+  badRequestResponse,
+  unauthorizedResponse,
+  notFoundResponse,
+} from '../../Helpers/Responses'
 import VerifyUser from 'App/Models/VerifyUser'
 import LoginValidator from 'App/Validators/LoginValidator'
 import SignupValidator from 'App/Validators/SignupValidator'
 import ResendOtpValidator from 'App/Validators/ResendOtpValidator'
 import Logger from '@ioc:Adonis/Core/Logger'
 import SendOtpValidator from 'App/Validators/SendOtpValidator'
+import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 
 export default class AuthController {
   public async login({ auth, request, response }: HttpContextContract) {
@@ -57,7 +63,7 @@ export default class AuthController {
       })
     } catch (error) {
       console.log('login error', error.messages)
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'Unsuccessul Login',
         error,
@@ -74,7 +80,7 @@ export default class AuthController {
       const emailExists = await User.query().where('email', email).first()
 
       if (emailExists) {
-        return badResponse({
+        return badRequestResponse({
           response,
           message: 'Email address exists. Use another',
         })
@@ -116,7 +122,7 @@ export default class AuthController {
       })
     } catch (error) {
       console.log('Signup error ==>', error)
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'account creation unsuccessful',
         error,
@@ -130,7 +136,7 @@ export default class AuthController {
       const verifyUser = await VerifyUser.query().where('token', token).first()
 
       if (!verifyUser) {
-        return badResponse({
+        return badRequestResponse({
           response,
           message: 'Invalid token',
         })
@@ -139,7 +145,7 @@ export default class AuthController {
       const user = await User.query().where('email', verifyUser.email).first()
 
       if (!user) {
-        return badResponse({
+        return badRequestResponse({
           response,
           message: 'Invalid user token',
         })
@@ -156,7 +162,7 @@ export default class AuthController {
         message: 'User successfully verified',
       })
     } catch (error) {
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'Bad request, try again',
         error,
@@ -183,7 +189,7 @@ export default class AuthController {
       })
     } catch (error) {
       console.log('user retrieval error', error)
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'Something went wrong',
       })
@@ -196,7 +202,7 @@ export default class AuthController {
     const emailTokenExists = await VerifyUser.query().where('email', email).preload('user').first()
 
     if (!emailTokenExists) {
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'request new otp code, previous code is invalid or expired',
       })
@@ -239,14 +245,14 @@ export default class AuthController {
           }
           message
             .from('support@petmatehq.com')
-            .to(user.email)
+            .to(email)
             .subject('Verification Email')
             .htmlView('emails/verify', data)
         })
       })
     } catch (error) {
       Logger.error({ err: new Error('failed to send otp') }, error)
-      return badResponse({ response, message: 'failed to send OTP', error })
+      return badRequestResponse({ response, message: 'failed to send OTP', error })
     }
   }
 
@@ -275,6 +281,55 @@ export default class AuthController {
       response,
       message: 'Password changed successfully.',
     })
+  }
+
+  public async update({ auth, request, response }: HttpContextContract) {
+    const { phone, firstName, lastName, address, city, state, country } = await request.validate(
+      UpdateUserValidator,
+    )
+
+    const user: User | null = auth.user ?? null
+
+    if (!user) {
+      return notFoundResponse({ response, message: 'User not found' })
+    }
+
+    if (phone) {
+      user.phone = phone
+    }
+
+    if (firstName) {
+      user.firstName = firstName
+    }
+
+    if (lastName) {
+      user.lastName = lastName
+    }
+
+    if (address) {
+      user.address = address
+    }
+
+    if (city) {
+      user.city = city
+    }
+
+    if (state) {
+      user.state = state
+    }
+
+    if (country) {
+      user.country = country
+    }
+
+    await user.save()
+
+    return successfulResponse({ response, message: 'Successfully updated user profile' })
+
+    try {
+    } catch (error) {
+      return badRequestResponse({ response, message: 'failed to update user', error })
+    }
   }
 
   public async logout({ auth, response }: HttpContextContract) {
@@ -358,7 +413,7 @@ export default class AuthController {
         data: { user },
       })
     } catch (error) {
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'failed to handle facebook auth callback',
         error,
@@ -428,7 +483,7 @@ export default class AuthController {
         data: { user },
       })
     } catch (error) {
-      return badResponse({
+      return badRequestResponse({
         response,
         message: 'failed to handle google auth callback',
         error,
