@@ -9,6 +9,7 @@ import {
   badRequestResponse,
   unauthorizedResponse,
   notFoundResponse,
+  deletedResponse,
 } from '../../Helpers/Responses'
 import VerifyUser from 'App/Models/VerifyUser'
 import LoginValidator from 'App/Validators/LoginValidator'
@@ -18,6 +19,7 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import SendOtpValidator from 'App/Validators/SendOtpValidator'
 import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import ChangePasswordValidator from 'App/Validators/ChangePasswordValidator'
+import { DateTime } from 'luxon'
 
 export default class AuthController {
   public async login({ auth, request, response }: HttpContextContract) {
@@ -291,51 +293,67 @@ export default class AuthController {
   }
 
   public async update({ auth, request, response }: HttpContextContract) {
-    const { phone, firstName, lastName, address, city, state, country } = await request.validate(
-      UpdateUserValidator,
-    )
-
-    const user: User | null = auth.user ?? null
-
-    if (!user) {
-      return notFoundResponse({ response, message: 'User not found' })
-    }
-
-    if (phone) {
-      user.phone = phone
-    }
-
-    if (firstName) {
-      user.firstName = firstName
-    }
-
-    if (lastName) {
-      user.lastName = lastName
-    }
-
-    if (address) {
-      user.address = address
-    }
-
-    if (city) {
-      user.city = city
-    }
-
-    if (state) {
-      user.state = state
-    }
-
-    if (country) {
-      user.country = country
-    }
-
-    await user.save()
-
-    return successfulResponse({ response, message: 'Successfully updated user profile' })
-
     try {
+      const { phone, firstName, lastName, address, city, state, country } = await request.validate(
+        UpdateUserValidator,
+      )
+
+      const user: User | null = auth.user ?? null
+
+      if (!user) {
+        return notFoundResponse({ response, message: 'User not found' })
+      }
+
+      if (phone) {
+        user.phone = phone
+      }
+
+      if (firstName) {
+        user.firstName = firstName
+      }
+
+      if (lastName) {
+        user.lastName = lastName
+      }
+
+      if (address) {
+        user.address = address
+      }
+
+      if (city) {
+        user.city = city
+      }
+
+      if (state) {
+        user.state = state
+      }
+
+      if (country) {
+        user.country = country
+      }
+
+      await user.save()
+
+      return successfulResponse({ response, message: 'Successfully updated user profile' })
     } catch (error) {
       return badRequestResponse({ response, message: 'failed to update user', error })
+    }
+  }
+
+  public async delete({ auth, response }: HttpContextContract) {
+    try {
+      const user: User | null = auth.user ?? null
+
+      if (!user) {
+        throw new Error('user not found')
+      }
+
+      user.deleted_at = DateTime.now()
+      await user.save()
+
+      return deletedResponse({ response, message: 'successfully deleted account' })
+    } catch (error) {
+      return badRequestResponse({ response, message: 'failed to delete account', error })
     }
   }
 
