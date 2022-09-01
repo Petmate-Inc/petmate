@@ -112,7 +112,7 @@ export default class AuthController {
             otp: token,
           }
           message
-            .from('support@thegridtrade.com')
+            .from('support@petmatehq.com')
             .to(user.email)
             .subject('Verification Email')
             .htmlView('emails/verify', data)
@@ -219,7 +219,7 @@ export default class AuthController {
         otp: emailTokenExists.token,
       }
       message
-        .from('support@thegridtrade.com')
+        .from('support@petmatehq.com')
         .to(emailTokenExists.email)
         .subject('Verification Email')
         .htmlView('verify', data)
