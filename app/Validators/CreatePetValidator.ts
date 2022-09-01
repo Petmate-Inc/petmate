@@ -5,7 +5,8 @@ export default class CreatePetValidator {
 	constructor(protected ctx: HttpContextContract) {}
 
 	public schema = schema.create({
-		dob: schema.date(),
+		age: schema.number(),
+		age_period: schema.enum(['days', 'weeks', 'months', 'years']),
 		classification: schema.string(),
 		breed: schema.string(),
 		weight: schema.number.optional(),

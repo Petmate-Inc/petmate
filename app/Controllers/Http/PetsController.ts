@@ -13,6 +13,7 @@ import { DateTime } from 'luxon'
 import CreatePetValidator from 'App/Validators/CreatePetValidator'
 import PetPicture from 'App/Models/PetPicture'
 import User from 'App/Models/User'
+import { getDogBreeds } from 'App/Utils/getDogBreeds'
 
 export default class PetsController {
 	public async fetchAllPets({ response }: HttpContextContract) {
@@ -31,17 +32,11 @@ export default class PetsController {
 		}
 	}
 
-	public async fetchSinglePet({
-		request,
-		response,
-	}: HttpContextContract) {
+	public async fetchSinglePet({ request, response }: HttpContextContract) {
 		try {
 			const petId = request.param('uuid')
 
-			const pet = await Pet.query()
-				.where('uuid', petId)
-				.whereNull('deleted_at')
-				.first()
+			const pet = await Pet.query().where('uuid', petId).whereNull('deleted_at').first()
 
 			if (!pet) {
 				return notFoundResponse({
@@ -69,9 +64,7 @@ export default class PetsController {
 			if (!user) {
 				throw new Error('User not found')
 			}
-			const pets = await Pet.query()
-				.where('owner_id', user.uuid)
-				.whereNull('deleted_at')
+			const pets = await Pet.query().where('owner_id', user.uuid).whereNull('deleted_at')
 
 			return successfulResponse({
 				response,
@@ -87,13 +80,10 @@ export default class PetsController {
 		}
 	}
 
-	public async createPet({
-		auth,
-		request,
-		response,
-	}: HttpContextContract) {
+	public async createPet({ auth, request, response }: HttpContextContract) {
 		const {
-			dob,
+			age,
+			age_period,
 			classification,
 			breed,
 			weight,
@@ -121,7 +111,8 @@ export default class PetsController {
 			pet.color = color
 			pet.name = name
 			pet.gender = gender
-			pet.dob = dob
+			pet.age = age
+			pet.age_period = age_period
 			pet.owner_id = owner.uuid
 			await pet.save()
 
@@ -139,11 +130,15 @@ export default class PetsController {
 		}
 	}
 
-	public async updatePet({ request, response }: HttpContextContract) {
+	public async updatePet({ auth, request, response }: HttpContextContract) {
 		try {
 			const petId = request.param('uuid')
+			const user: User | null = auth.user ?? null
 
-			const pet = await Pet.query().where('uuid', petId).first()
+			if (!user) {
+				throw new Error('pet not found')
+			}
+			const pet = await Pet.query().where('uuid', petId).where('owner_id', user.uuid).first()
 
 			if (!pet) {
 				return notFoundResponse({
@@ -160,11 +155,16 @@ export default class PetsController {
 		}
 	}
 
-	public async deletePet({ request, response }: HttpContextContract) {
+	public async deletePet({ auth, request, response }: HttpContextContract) {
 		try {
 			const petId = request.param('uuid')
+			const user: User | null = auth.user ?? null
 
-			const pet = await Pet.query().where('uuid', petId).first()
+			if (!user) {
+				throw new Error('pet not found')
+			}
+
+			const pet = await Pet.query().where('uuid', petId).where('owner_id', user.uuid).first()
 
 			if (!pet) {
 				return notFoundResponse({
@@ -190,10 +190,7 @@ export default class PetsController {
 		}
 	}
 
-	public async uploadPetImage({
-		request,
-		response,
-	}: HttpContextContract) {
+	public async uploadPetImage({ request, response }: HttpContextContract) {
 		const imagePath = request.file('image_path')
 
 		if (!imagePath) {
@@ -203,10 +200,7 @@ export default class PetsController {
 			})
 		}
 		try {
-			const result = await uploadImage(
-				imagePath.tmpPath,
-				'pet-images',
-			)
+			const result = await uploadImage(imagePath.tmpPath, 'pet-images')
 
 			Logger.info({ result }, 'upload image result')
 
@@ -222,6 +216,28 @@ export default class PetsController {
 				response,
 				message: 'failed to upload pet picture',
 			})
+		}
+	}
+
+	public async fetchDogBreeds({ response }: HttpContextContract) {
+		try {
+			const dogBreeds = getDogBreeds().map((breed) => {
+				return {
+					breed: breed.name,
+					breed_group: breed.breed_group,
+					image: breed.image.url,
+					origin: breed.origin,
+					temperament: breed.temperament,
+				}
+			})
+
+			return successfulResponse({
+				response,
+				message: 'successfully fetched dog breeds',
+				data: dogBreeds,
+			})
+		} catch (error) {
+			return badRequestResponse({ response, message: 'failed to fetch dog breeds' })
 		}
 	}
 }

@@ -1,12 +1,5 @@
 import { DateTime } from 'luxon'
-import {
-	BaseModel,
-	column,
-	HasMany,
-	hasMany,
-	HasOne,
-	hasOne,
-} from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, HasMany, hasMany, HasOne, hasOne } from '@ioc:Adonis/Lucid/Orm'
 import PetPicture from './PetPicture'
 import VetCard from './VetCard'
 import User from './User'
@@ -19,7 +12,10 @@ export default class Pet extends BaseModel {
 	public uuid: string
 
 	@column()
-	public dob: DateTime
+	public age: number
+
+	@column()
+	public age_period: string
 
 	@column()
 	public classification: string
