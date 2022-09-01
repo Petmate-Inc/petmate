@@ -1,13 +1,227 @@
+import { v4 as uuidv4 } from 'uuid'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import {
+	badRequestResponse,
+	deletedResponse,
+	notFoundResponse,
+	successfulResponse,
+} from 'App/Helpers/Responses'
+import Logger from '@ioc:Adonis/Core/Logger'
+import { uploadImage } from 'App/Services/cloudinary.service'
+import Pet from 'App/Models/Pet'
+import { DateTime } from 'luxon'
+import CreatePetValidator from 'App/Validators/CreatePetValidator'
+import PetPicture from 'App/Models/PetPicture'
+import User from 'App/Models/User'
 
 export default class PetsController {
-  public async fetchAllPets({}: HttpContextContract) {}
+	public async fetchAllPets({ response }: HttpContextContract) {
+		try {
+			const pets = await Pet.query().whereNull('deleted_at')
+			return successfulResponse({
+				response,
+				message: 'successfully fetched all pets',
+				data: pets,
+			})
+		} catch (error) {
+			return badRequestResponse({
+				response,
+				message: 'failed to fetch all pets',
+			})
+		}
+	}
 
-  public async fetchSinglePet({}: HttpContextContract) {}
+	public async fetchSinglePet({
+		request,
+		response,
+	}: HttpContextContract) {
+		try {
+			const petId = request.param('uuid')
 
-  public async createPet({}: HttpContextContract) {}
+			const pet = await Pet.query()
+				.where('uuid', petId)
+				.whereNull('deleted_at')
+				.first()
 
-  public async updatePet({}: HttpContextContract) {}
+			if (!pet) {
+				return notFoundResponse({
+					response,
+					message: 'pet not found',
+				})
+			}
 
-  public async deletePet({}: HttpContextContract) {}
+			return successfulResponse({
+				response,
+				message: 'successfully fetched pet data',
+			})
+		} catch (error) {
+			return badRequestResponse({
+				response,
+				message: 'failed to fetch pet data',
+			})
+		}
+	}
+
+	public async fetchMyPets({ auth, response }: HttpContextContract) {
+		try {
+			const user: User | null = auth.user ?? null
+
+			if (!user) {
+				throw new Error('User not found')
+			}
+			const pets = await Pet.query()
+				.where('owner_id', user.uuid)
+				.whereNull('deleted_at')
+
+			return successfulResponse({
+				response,
+				message: 'successfully fetched pets',
+				data: pets,
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'failed to fetch pets')
+			return badRequestResponse({
+				response,
+				message: 'failed to fetch pets',
+			})
+		}
+	}
+
+	public async createPet({
+		auth,
+		request,
+		response,
+	}: HttpContextContract) {
+		const {
+			dob,
+			classification,
+			breed,
+			weight,
+			color,
+			primary_image_url,
+			name,
+			gender,
+		} = await request.validate(CreatePetValidator)
+
+		try {
+			const owner = auth.user ?? null
+			if (!owner) {
+				throw new Error('user not found')
+			}
+			const petId = uuidv4()
+			const pet = new Pet()
+			pet.uuid = petId
+			pet.classification = classification
+			pet.breed = breed
+
+			if (weight) {
+				pet.weight = weight
+			}
+
+			pet.color = color
+			pet.name = name
+			pet.gender = gender
+			pet.dob = dob
+			pet.owner_id = owner.uuid
+			await pet.save()
+
+			const petPicture = new PetPicture()
+			petPicture.imageUrl = primary_image_url
+			petPicture.petId = petId
+			petPicture.isPrimary = true
+			await petPicture.save()
+		} catch (error) {
+			Logger.error({ err: error }, 'failed to create pet')
+			return badRequestResponse({
+				response,
+				message: 'failed to create pet',
+			})
+		}
+	}
+
+	public async updatePet({ request, response }: HttpContextContract) {
+		try {
+			const petId = request.param('uuid')
+
+			const pet = await Pet.query().where('uuid', petId).first()
+
+			if (!pet) {
+				return notFoundResponse({
+					response,
+					message: 'pet not found',
+				})
+			}
+		} catch (error) {
+			Logger.error({ err: error }, 'failed to update pet')
+			return badRequestResponse({
+				response,
+				message: 'failed to update pet',
+			})
+		}
+	}
+
+	public async deletePet({ request, response }: HttpContextContract) {
+		try {
+			const petId = request.param('uuid')
+
+			const pet = await Pet.query().where('uuid', petId).first()
+
+			if (!pet) {
+				return notFoundResponse({
+					response,
+					message: 'pet not found',
+				})
+			}
+
+			pet.deletedAt = DateTime.now()
+
+			await pet.save()
+
+			return deletedResponse({
+				response,
+				message: 'successfully deleted pet',
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'failed to delete pet')
+			return badRequestResponse({
+				response,
+				message: 'failed to delete pet',
+			})
+		}
+	}
+
+	public async uploadPetImage({
+		request,
+		response,
+	}: HttpContextContract) {
+		const imagePath = request.file('image_path')
+
+		if (!imagePath) {
+			return badRequestResponse({
+				response,
+				message: 'imag_path is required',
+			})
+		}
+		try {
+			const result = await uploadImage(
+				imagePath.tmpPath,
+				'pet-images',
+			)
+
+			Logger.info({ result }, 'upload image result')
+
+			return successfulResponse({
+				response,
+				message: 'successfully uploaded image',
+				data: { url: result },
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'failed to upload pet picture')
+
+			return badRequestResponse({
+				response,
+				message: 'failed to upload pet picture',
+			})
+		}
+	}
 }
