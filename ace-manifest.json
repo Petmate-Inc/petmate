@@ -11,19 +11,66 @@
     },
     "list:routes": {
       "settings": {
-        "loadApp": true
+        "loadApp": true,
+        "stayAlive": true
       },
-      "commandPath": "@adonisjs/core/build/commands/ListRoutes",
+      "commandPath": "@adonisjs/core/build/commands/ListRoutes/index",
       "commandName": "list:routes",
       "description": "List application routes",
       "args": [],
       "aliases": [],
       "flags": [
         {
+          "name": "verbose",
+          "propertyName": "verbose",
+          "type": "boolean",
+          "description": "Display more information"
+        },
+        {
+          "name": "reverse",
+          "propertyName": "reverse",
+          "type": "boolean",
+          "alias": "r",
+          "description": "Reverse routes display"
+        },
+        {
+          "name": "methods",
+          "propertyName": "methodsFilter",
+          "type": "array",
+          "alias": "m",
+          "description": "Filter routes by method"
+        },
+        {
+          "name": "patterns",
+          "propertyName": "patternsFilter",
+          "type": "array",
+          "alias": "p",
+          "description": "Filter routes by the route pattern"
+        },
+        {
+          "name": "names",
+          "propertyName": "namesFilter",
+          "type": "array",
+          "alias": "n",
+          "description": "Filter routes by route name"
+        },
+        {
           "name": "json",
           "propertyName": "json",
           "type": "boolean",
           "description": "Output as JSON"
+        },
+        {
+          "name": "table",
+          "propertyName": "table",
+          "type": "boolean",
+          "description": "Output as Table"
+        },
+        {
+          "name": "max-width",
+          "propertyName": "maxWidth",
+          "type": "number",
+          "description": "Specify maximum rendering width. Ignored for JSON Output"
         }
       ]
     },
@@ -55,7 +102,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/DbSeed",
       "commandName": "db:seed",
-      "description": "Execute database seeder files",
+      "description": "Execute database seeders",
       "args": [],
       "aliases": [],
       "flags": [
@@ -198,13 +245,13 @@
           "name": "drop-views",
           "propertyName": "dropViews",
           "type": "boolean",
-          "description": "Also drop all views in database"
+          "description": "Drop all views"
         },
         {
           "name": "drop-types",
           "propertyName": "dropTypes",
           "type": "boolean",
-          "description": "Also drop all types in database ( Postgres only )"
+          "description": "Drop all custom types (Postgres only)"
         },
         {
           "name": "force",
@@ -220,7 +267,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Run",
       "commandName": "migration:run",
-      "description": "Run pending migrations",
+      "description": "Migrate database by running pending migrations",
       "args": [],
       "aliases": [],
       "flags": [
@@ -241,7 +288,7 @@
           "name": "dry-run",
           "propertyName": "dryRun",
           "type": "boolean",
-          "description": "Print SQL queries, instead of running the migrations"
+          "description": "Do not run actual queries. Instead view the SQL output"
         }
       ]
     },
@@ -251,7 +298,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Rollback",
       "commandName": "migration:rollback",
-      "description": "Rollback migrations to a given batch number",
+      "description": "Rollback migrations to a specific batch number",
       "args": [],
       "aliases": [],
       "flags": [
@@ -272,7 +319,7 @@
           "name": "dry-run",
           "propertyName": "dryRun",
           "type": "boolean",
-          "description": "Print SQL queries, instead of running the migrations"
+          "description": "Do not run actual queries. Instead view the SQL output"
         },
         {
           "name": "batch",
@@ -288,7 +335,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Status",
       "commandName": "migration:status",
-      "description": "Check migrations current status.",
+      "description": "View migrations status",
       "args": [],
       "aliases": [],
       "flags": [
@@ -307,7 +354,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Reset",
       "commandName": "migration:reset",
-      "description": "Reset migrations to initial state",
+      "description": "Rollback all migrations",
       "args": [],
       "aliases": [],
       "flags": [
@@ -328,7 +375,7 @@
           "name": "dry-run",
           "propertyName": "dryRun",
           "type": "boolean",
-          "description": "Only print SQL queries instead of executing them"
+          "description": "Do not run actual queries. Instead view the SQL output"
         }
       ]
     },
@@ -338,7 +385,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Refresh",
       "commandName": "migration:refresh",
-      "description": "Reset and re-run all migrations.",
+      "description": "Rollback and migrate database",
       "args": [],
       "aliases": [],
       "flags": [
@@ -359,13 +406,13 @@
           "name": "dry-run",
           "propertyName": "dryRun",
           "type": "boolean",
-          "description": "Only print SQL queries instead of executing them"
+          "description": "Do not run actual queries. Instead view the SQL output"
         },
         {
           "name": "seed",
           "propertyName": "seed",
           "type": "boolean",
-          "description": "Indicates if the seed task should run."
+          "description": "Run seeders"
         }
       ]
     },
@@ -375,7 +422,7 @@
       },
       "commandPath": "@adonisjs/lucid/build/commands/Migration/Fresh",
       "commandName": "migration:fresh",
-      "description": "Drop all tables and re-run all migrations.",
+      "description": "Drop all tables and re-migrate the database",
       "args": [],
       "aliases": [],
       "flags": [
@@ -393,30 +440,41 @@
           "description": "Explicitly force command to run in production"
         },
         {
-          "name": "dry-run",
-          "propertyName": "dryRun",
-          "type": "boolean",
-          "description": "Only print SQL queries instead of executing them"
-        },
-        {
           "name": "seed",
           "propertyName": "seed",
           "type": "boolean",
-          "description": "Indicates if the seed task should run."
+          "description": "Run seeders"
         },
         {
           "name": "drop-views",
           "propertyName": "dropViews",
           "type": "boolean",
-          "description": "Also drop all views in database"
+          "description": "Drop all views"
         },
         {
           "name": "drop-types",
           "propertyName": "dropTypes",
           "type": "boolean",
-          "description": "Also drop all types in database ( Postgres only )"
+          "description": "Drop all custom types (Postgres only)"
         }
       ]
+    },
+    "make:mailer": {
+      "settings": {},
+      "commandPath": "@adonisjs/mail/build/commands/MakeMailer",
+      "commandName": "make:mailer",
+      "description": "Make a new mailer class",
+      "args": [
+        {
+          "type": "string",
+          "propertyName": "name",
+          "name": "name",
+          "required": true,
+          "description": "Name of the mailer class"
+        }
+      ],
+      "aliases": [],
+      "flags": []
     }
   },
   "aliases": {}
