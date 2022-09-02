@@ -8,6 +8,8 @@
     "build"
   ],
   "compilerOptions": {
+    "moduleResolution": "node",
+    "moduleDetection": "auto",
     "experimentalDecorators": true,
     "outDir": "build",
     "rootDir": "./",
