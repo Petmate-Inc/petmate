@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import {
 	badRequestResponse,
+	createdResponse,
 	deletedResponse,
 	notFoundResponse,
 	successfulResponse,
@@ -14,6 +15,7 @@ import CreatePetValidator from 'App/Validators/CreatePetValidator'
 import PetPicture from 'App/Models/PetPicture'
 import User from 'App/Models/User'
 import { getDogBreeds } from 'App/Utils/getDogBreeds'
+import UpdatePetValidator from 'App/Validators/UpdatePetValidator'
 
 export default class PetsController {
 	public async fetchAllPets({ response }: HttpContextContract) {
@@ -48,6 +50,7 @@ export default class PetsController {
 			return successfulResponse({
 				response,
 				message: 'successfully fetched pet data',
+				data: pet,
 			})
 		} catch (error) {
 			return badRequestResponse({
@@ -121,6 +124,11 @@ export default class PetsController {
 			petPicture.petId = petId
 			petPicture.isPrimary = true
 			await petPicture.save()
+
+			return createdResponse({
+				response,
+				message: 'successfully created pet',
+			})
 		} catch (error) {
 			Logger.error({ err: error }, 'failed to create pet')
 			return badRequestResponse({
@@ -131,6 +139,8 @@ export default class PetsController {
 	}
 
 	public async updatePet({ auth, request, response }: HttpContextContract) {
+		const { age, age_period, classification, breed, weight, color, name, gender } =
+			await request.validate(UpdatePetValidator)
 		try {
 			const petId = request.param('uuid')
 			const user: User | null = auth.user ?? null
@@ -146,6 +156,41 @@ export default class PetsController {
 					message: 'pet not found',
 				})
 			}
+
+			if (age) {
+				pet.age = age
+			}
+
+			if (age_period) {
+				pet.age_period = age_period
+			}
+
+			if (weight) {
+				pet.weight = weight
+			}
+
+			if (color) {
+				pet.color = color
+			}
+
+			if (classification) {
+				pet.classification = classification
+			}
+
+			if (breed) {
+				pet.breed = breed
+			}
+
+			if (name) {
+				pet.name = name
+			}
+
+			if (gender) {
+				pet.gender = gender
+			}
+
+			await pet.save()
+			return successfulResponse({ response, message: 'Successfully updated pet' })
 		} catch (error) {
 			Logger.error({ err: error }, 'failed to update pet')
 			return badRequestResponse({

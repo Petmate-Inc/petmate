@@ -15,7 +15,9 @@ export default class Pets extends BaseSchema {
 			table.string('color')
 			table.string('name')
 			table.enum('gender', ['male', 'female'])
-			table.enum('verification_status', ['verified', 'verification_ongoing', 'unverified'])
+			table
+				.enum('verification_status', ['verified', 'verification_ongoing', 'unverified'])
+				.defaultTo('unverified')
 			table.string('owner_id').references('uuid').inTable('users')
 			table.timestamps()
 			table.timestamp('deleted_at')
