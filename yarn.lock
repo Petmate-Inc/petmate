@@ -208,24 +208,23 @@
     abstract-logging "^2.0.1"
     pino "^6.14.0"
 
-"@adonisjs/lucid@*":
-  version "18.1.0"
-  resolved "https://registry.yarnpkg.com/@adonisjs/lucid/-/lucid-18.1.0.tgz#93b4c8e91f26cc70afe0b14d46c611dbc8869035"
-  integrity sha512-RAUtsBSkdEC3hkbcRawY+v2OljX1zt/b1zEuBN0/4kXHNYp3y+dCuF73OGVoWpwReJsEsvKUsGmZ1Nyn0DbBSw==
+"@adonisjs/lucid@^17.2.0":
+  version "17.2.0"
+  resolved "https://registry.yarnpkg.com/@adonisjs/lucid/-/lucid-17.2.0.tgz#f47c64f43ecac3fa120f36b1a8d79e38830cde13"
+  integrity sha512-cQPJLg1rN8JicH2BK7cL6zXAQPAl4ZSL7APs3DhqYIUuvjgPQN7wL6bzk6hUGT07mZd24cVYGrcvTFhqirk7Aw==
   dependencies:
-    "@faker-js/faker" "^7.3.0"
+    "@faker-js/faker" "^6.1.2"
     "@poppinss/hooks" "^5.0.3"
-    "@poppinss/utils" "^4.0.4"
+    "@poppinss/utils" "^4.0.3"
     fast-deep-equal "^3.1.3"
     igniculus "^1.5.0"
-    knex "^2.0.0"
-    knex-dynamic-connection "^3.0.0"
-    luxon "^2.4.0"
+    knex "^1.0.5"
+    knex-dynamic-connection "^2.1.3"
+    luxon "^2.3.1"
     macroable "^7.0.1"
     pretty-hrtime "^1.0.3"
     qs "^6.10.3"
     slash "^3.0.0"
-    tarn "^3.0.2"
 
 "@adonisjs/mail@^8.1.2":
   version "8.1.2"
@@ -322,10 +321,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@faker-js/faker@^7.3.0":
-  version "7.5.0"
-  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-7.5.0.tgz#8e8265f65f5b68d2a57886d59b03788eeb676264"
-  integrity sha512-8wNUCCUHvfvI0gQpDUho/3gPzABffnCn5um65F8dzQ86zz6dlt4+nmAA7PQUc8L+eH+9RgR/qzy5N/8kN0Ozdw==
+"@faker-js/faker@^6.1.2":
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/@faker-js/faker/-/faker-6.3.1.tgz#1ae963dd40405450a2945408cba553e1afa3e0fb"
+  integrity sha512-8YXBE2ZcU/pImVOHX7MWrSR/X5up7t6rPWZlk34RwZEcdr3ua6X+32pSd6XuOQRN+vbuvYNfA6iey8NbrjuMFQ==
 
 "@kdf/salt@^2.0.1":
   version "2.0.1"
@@ -1245,7 +1244,12 @@ color-support@^1.1.2, color-support@^1.1.3:
   resolved "https://registry.yarnpkg.com/color-support/-/color-support-1.1.3.tgz#93834379a1cc9a0c61f82f52f0d04322251bd5a2"
   integrity sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==
 
-colorette@2.0.19, colorette@^2.0.7:
+colorette@2.0.16:
+  version "2.0.16"
+  resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.16.tgz#713b9af84fdb000139f04546bd4a93f62a5085da"
+  integrity sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==
+
+colorette@^2.0.7:
   version "2.0.19"
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
   integrity sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==
@@ -1397,7 +1401,7 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@4.3.4, debug@^4.3.4:
+debug@4, debug@4.3.4, debug@^4.3.3, debug@^4.3.4:
   version "4.3.4"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.4.tgz#1319f6579357f2338d3337d2cdd4914bb5dcc865"
   integrity sha512-PRWFHuSU3eDtQJPvnNY7Jcket1j0t5OuOsFzPPzsekD52Zl8qUfFIPEiswXqIvHWGVHOgX+7G/vCNNhehwxfkQ==
@@ -2557,20 +2561,20 @@ kleur@^4.1.4, kleur@^4.1.5:
   resolved "https://registry.yarnpkg.com/kleur/-/kleur-4.1.5.tgz#95106101795f7050c6c650f350c683febddb1780"
   integrity sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==
 
-knex-dynamic-connection@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/knex-dynamic-connection/-/knex-dynamic-connection-3.0.0.tgz#122e0a3c3477583f94cdf85d51c224cde17c4fb6"
-  integrity sha512-LSUlabH/5QHTzMxd8d+bhbiBAivV7QdtE4zPI2CfKYbx+uV1gqaN5Ua5AZc/O7kGAQJ4q35/4gUheCoHGPUHzg==
+knex-dynamic-connection@^2.1.3:
+  version "2.1.3"
+  resolved "https://registry.yarnpkg.com/knex-dynamic-connection/-/knex-dynamic-connection-2.1.3.tgz#079400c95a6792bfd76bbeae22d6ce7d8b68be55"
+  integrity sha512-yi2CUcjjYpX6LJLX14+ZPr8vfojpFcamtJSwP25DqIKG78oCaHN1eO9gC5POljG2BelLmQE19sDHS9w7CfCuKg==
   dependencies:
-    debug "^4.3.4"
-    knex "^2.0.0"
+    debug "^4.3.3"
+    knex "^1.0.3"
 
-knex@^2.0.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/knex/-/knex-2.3.0.tgz#87fa2a9553d7cafb125d7a0645256fbe29ef5967"
-  integrity sha512-WMizPaq9wRMkfnwKXKXgBZeZFOSHGdtoSz5SaLAVNs3WRDfawt9O89T4XyH52PETxjV8/kRk0Yf+8WBEP/zbYw==
+knex@^1.0.3, knex@^1.0.5:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/knex/-/knex-1.0.7.tgz#965f4490efc451b140aac4c5c6efa39fd877597b"
+  integrity sha512-89jxuRATt4qJMb9ZyyaKBy0pQ4d5h7eOFRqiNFnUvsgU+9WZ2eIaZKrAPG1+F3mgu5UloPUnkVE5Yo2sKZUs6Q==
   dependencies:
-    colorette "2.0.19"
+    colorette "2.0.16"
     commander "^9.1.0"
     debug "4.3.4"
     escalade "^3.1.1"
