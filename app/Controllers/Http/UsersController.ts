@@ -228,7 +228,7 @@ export default class AuthController {
 
 		return successfulResponse({
 			response,
-			message: 'Verification link has been resent',
+			message: 'OTP code has been resent',
 		})
 	}
 
