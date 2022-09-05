@@ -223,7 +223,7 @@ export default class AuthController {
 				.from('support@petmate.ng')
 				.to(emailTokenExists.email)
 				.subject('Verification Email')
-				.htmlView('verify', data)
+				.htmlView('emails/verify', data)
 		})
 
 		return successfulResponse({
