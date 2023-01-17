@@ -18,28 +18,28 @@ import { AllyConfig } from '@ioc:Adonis/Addons/Ally'
 |
 */
 const allyConfig: AllyConfig = {
-  /*
+	/*
 	|--------------------------------------------------------------------------
 	| Google driver
 	|--------------------------------------------------------------------------
 	*/
-  google: {
-    driver: 'google',
-    clientId: Env.get('GOOGLE_CLIENT_ID'),
-    clientSecret: Env.get('GOOGLE_CLIENT_SECRET'),
-    callbackUrl: 'http://localhost:3034/api/v1/callback/google',
-  },
-  /*
+	google: {
+		driver: 'google',
+		clientId: Env.get('GOOGLE_CLIENT_ID'),
+		clientSecret: Env.get('GOOGLE_CLIENT_SECRET'),
+		callbackUrl: 'http://localhost:3034/api/v1/callback/google',
+	},
+	/*
   |--------------------------------------------------------------------------
   | Facebook driver
   |--------------------------------------------------------------------------
   */
-  facebook: {
-    driver: 'facebook',
-    clientId: Env.get('FACEBOOK_CLIENT_ID'),
-    clientSecret: Env.get('FACEBOOK_CLIENT_SECRET'),
-    callbackUrl: 'localhost:3034/api/v1/callback/facebook',
-  },
+	facebook: {
+		driver: 'facebook',
+		clientId: Env.get('FACEBOOK_CLIENT_ID'),
+		clientSecret: Env.get('FACEBOOK_CLIENT_SECRET'),
+		callbackUrl: 'https://da48-105-112-162-11.eu.ngrok.io/',
+	},
 }
 
 export default allyConfig

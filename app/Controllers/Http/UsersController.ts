@@ -371,9 +371,7 @@ export default class AuthController {
 	}
 
 	public async getFacebookAuthLink({ ally }) {
-		return ally.use('facebook').redirect((redirectRequest) => {
-			redirectRequest.scopes([])
-		})
+		return ally.use('facebook').redirect()
 	}
 
 	// callbacks for social authentication
