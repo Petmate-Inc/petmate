@@ -9,6 +9,10 @@
     "start": "node ace build --production --ignore-ts-errors && node build/server.js",
     "db": "node ace migration:rollback && node ace migration:run"
   },
+  "engines" : { 
+    "npm" : ">=8.0.0 <9.0.0",
+    "node" : ">=16.0.0 <17.0.0"
+  },
   "devDependencies": {
     "@adonisjs/assembler": "^5.3.0",
     "adonis-preset-ts": "^2.1.0",
