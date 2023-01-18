@@ -39,6 +39,10 @@ const allyConfig: AllyConfig = {
 		clientId: Env.get('FACEBOOK_CLIENT_ID'),
 		clientSecret: Env.get('FACEBOOK_CLIENT_SECRET'),
 		callbackUrl: 'https://petmate-staging.herokuapp.com/api/v1/callback/facebook',
+		scopes: ['email', 'user_photos'],
+		userFields: ['first_name', 'picture', 'email'],
+		display: '',
+		authType: '',
 	},
 }
 
