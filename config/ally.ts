@@ -27,7 +27,7 @@ const allyConfig: AllyConfig = {
 		driver: 'google',
 		clientId: Env.get('GOOGLE_CLIENT_ID'),
 		clientSecret: Env.get('GOOGLE_CLIENT_SECRET'),
-		callbackUrl: 'http://localhost:3034/api/v1/callback/google',
+		callbackUrl: 'https://petmate-staging.herokuapp.com/callback/google',
 	},
 	/*
   |--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ const allyConfig: AllyConfig = {
 		driver: 'facebook',
 		clientId: Env.get('FACEBOOK_CLIENT_ID'),
 		clientSecret: Env.get('FACEBOOK_CLIENT_SECRET'),
-		callbackUrl: 'https://da48-105-112-162-11.eu.ngrok.io/',
+		callbackUrl: 'https://petmate-staging.herokuapp.com/callback/facebook',
 	},
 }
 
