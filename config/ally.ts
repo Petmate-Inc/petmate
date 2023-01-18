@@ -27,7 +27,7 @@ const allyConfig: AllyConfig = {
 		driver: 'google',
 		clientId: Env.get('GOOGLE_CLIENT_ID'),
 		clientSecret: Env.get('GOOGLE_CLIENT_SECRET'),
-		callbackUrl: 'https://petmate-staging.herokuapp.com/callback/google',
+		callbackUrl: 'https://petmate-staging.herokuapp.com/api/v1/callback/google',
 	},
 	/*
   |--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ const allyConfig: AllyConfig = {
 		driver: 'facebook',
 		clientId: Env.get('FACEBOOK_CLIENT_ID'),
 		clientSecret: Env.get('FACEBOOK_CLIENT_SECRET'),
-		callbackUrl: 'https://petmate-staging.herokuapp.com/callback/facebook',
+		callbackUrl: 'https://petmate-staging.herokuapp.com/api/v1/callback/facebook',
 	},
 }
 
