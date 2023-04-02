@@ -34,6 +34,9 @@ export default class PetsController {
 		}
 	}
 
+	// New files in between 
+
+
 	public async fetchSinglePet({ request, response }: HttpContextContract) {
 		try {
 			const petId = request.param('uuid')
