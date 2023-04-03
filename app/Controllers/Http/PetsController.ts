@@ -63,6 +63,9 @@ export default class PetsController {
 		}
 	}
 
+
+	// Creating description for git
+
 	public async fetchMyPets({ auth, response }: HttpContextContract) {
 		try {
 			const user: User | null = auth.user ?? null
