@@ -17,6 +17,7 @@ Route.get('/api/v1/', async () => {
 })
 
 Route.group(() => {
+	Route.get('test', 'UsersController.test')
 	Route.post('login', 'UsersController.login')
 	Route.post('signup', 'UsersController.signup')
 	Route.post('verify-email/:token', 'UsersController.verify')

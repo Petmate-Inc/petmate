@@ -21,6 +21,7 @@ import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import ChangePasswordValidator from 'App/Validators/ChangePasswordValidator'
 import { DateTime } from 'luxon'
 import { generateOtp } from 'App/Utils/generateOtp'
+import { Request } from '@adonisjs/core/build/standalone'
 
 export default class AuthController {
 	public async login({ auth, request, response }: HttpContextContract) {
@@ -133,6 +134,7 @@ export default class AuthController {
 			})
 		}
 	}
+
 
 	public async verify({ request, response }: HttpContextContract) {
 		try {
@@ -341,6 +343,14 @@ export default class AuthController {
 		}
 	}
 
+	public async test({}:HttpContextContract){
+		try{
+
+		}catch(error){
+			Logger.error({err: new Error("Not found")}, "Route was not found")
+		}
+	}
+
 	public async delete({ auth, response }: HttpContextContract) {
 		try {
 			const user: User | null = auth.user ?? null
@@ -383,21 +393,24 @@ export default class AuthController {
 			 * User has explicitly denied the login request
 			 */
 			if (facebook.accessDenied()) {
-				throw new Error('Access was denied')
+				// throw new Error('Access was denied')
+				Logger.error({err: new Error("Access denied")}, 'Access with facebook auth was denied')
 			}
 
 			/**
 			 * Unable to verify the CSRF state
 			 */
 			if (facebook.stateMisMatch()) {
-				throw new Error('Request expired. Retry again')
+				// throw new Error('Request expired. Retry again')
+				Logger.error({err: new Error("Mismatched error")}, 'Request expired. Retry again')
 			}
 
 			/**
 			 * There was an unknown error during the redirect
 			 */
 			if (facebook.hasError()) {
-				throw new Error(facebook.getError() ?? 'Error not specified')
+				// throw new Error(facebook.getError() ?? 'Error not specified')
+				Logger.error({err: facebook.getError() ?? 'Error not specified'})
 			}
 
 			/**
@@ -411,9 +424,10 @@ export default class AuthController {
 			 */
 
 			if (!facebookUser.email) {
-				throw new Error(
-					'no email address associated with this account, try creating account with email and password',
-				)
+				// throw new Error(
+				// 	'no email address associated with this account, try creating account with email and password',
+				// )
+				Logger.error({err: new Error("Email Not found")}, 'no email address associated with this account, try creating account with email and password')
 			}
 
 			const user = await User.firstOrCreate(
@@ -442,6 +456,7 @@ export default class AuthController {
 				message: 'failed to handle facebook auth callback',
 				error,
 			})
+			Logger.error({err:error}, 'Bad request')
 		}
 	}
 
@@ -453,21 +468,25 @@ export default class AuthController {
 			 * User has explicitly denied the login request
 			 */
 			if (google.accessDenied()) {
-				throw new Error('Access was denied')
+				// throw new Error('Access was denied')
+				Logger.error({err: new Error("Access denied")}, 'Access with google auth was denied')
 			}
 
 			/**
 			 * Unable to verify the CSRF state
 			 */
 			if (google.stateMisMatch()) {
-				throw new Error('Request expired. Retry again')
+				// throw new Error('Request expired. Retry again')
+				Logger.error({err: new Error("Mismatched error")}, 'Request expired. Retry again')
 			}
 
 			/**
 			 * There was an unknown error during the redirect
 			 */
 			if (google.hasError()) {
-				throw new Error(google.getError() ?? 'Error not specified')
+				// throw new Error(google.getError() ?? 'Error not specified')
+				Logger.error({err: google.getError() ?? 'Error not specified'})
+			// }
 			}
 
 			/**
@@ -481,9 +500,11 @@ export default class AuthController {
 			 */
 
 			if (!googleUser.email) {
-				throw new Error(
-					'no email address associated with this account, try creating account with email and password',
-				)
+				// throw new Error(
+				// 	'no email address associated with this account, try creating account with email and password',
+				// )
+				Logger.error({err: new Error("Email Not found")}, 'no email address associated with this account, try creating account with email and password')
+			}
 			}
 
 			const user = await User.firstOrCreate(
@@ -507,11 +528,15 @@ export default class AuthController {
 				data: { user },
 			})
 		} catch (error) {
+
 			return badRequestResponse({
 				response,
 				message: 'failed to handle google auth callback',
 				error,
 			})
-		}
+
+			Logger.error({err:error}, 'Bad request')
+
+			
 	}
 }
