@@ -567,11 +567,17 @@ export default class AuthController {
 					{ err: new Error('Email Not found') },
 					'no email address associated with this account, try creating account with email and password',
 				)
+
+				return notFoundResponse({
+					response,
+					message: 'no email associated with facebook account. use signup or google auth',
+					data: facebookUser,
+				})
 			}
 
 			const user = await User.firstOrCreate(
 				{
-					email: facebookUser.email ?? facebookUser.id,
+					email: facebookUser.email,
 				},
 				{
 					status: facebookUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
