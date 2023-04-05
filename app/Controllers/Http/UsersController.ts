@@ -31,6 +31,7 @@ export default class AuthController {
 			const user = await User.query().where('email', email).whereNull('deleted_at').first()
 
 			if (!user) {
+				Logger.error({err: new Error("Invalid email or password")}, "Invalid email or password when the user is not found")
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid email or password',
@@ -38,6 +39,7 @@ export default class AuthController {
 			}
 
 			if (!(await Hash.verify(user.password, password))) {
+				Logger.error({err: new Error("Invalid email or password")}, "Invalid email or password if password does not match exixting password")
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid email or password',
@@ -47,11 +49,13 @@ export default class AuthController {
 			const token = await auth.use('api').generate(user, { expiresIn: '30mins' })
 
 			if (user.status === 'pending') {
+				Logger.error({err: new Error("Account not verified")}, "Account not verified when user has not verified their email")
 				return unauthorizedResponse({
 					response,
 					message: `Kindly verify your account to proceed`,
 				})
 			} else if (user.status === 'banned') {
+				Logger.error({err: new Error("Account is banned")}, "This account is banned , kindly contact support")
 				return unauthorizedResponse({
 					response,
 					message: `Your account has been banned, kindly contact support`,
@@ -68,6 +72,7 @@ export default class AuthController {
 			})
 		} catch (error) {
 			console.log('login error', error.messages)
+			Logger.error({err: error.messages}, "The Login us unsuccessful")
 			return badRequestResponse({
 				response,
 				message: 'Unsuccessul Login',
@@ -85,6 +90,7 @@ export default class AuthController {
 			const emailExists = await User.query().where('email', email).first()
 
 			if (emailExists) {
+				Logger.error({err: new Error("Email alredy aexist")}, "Email address provided already exist in the database")
 				return badRequestResponse({
 					response,
 					message: 'Email address exists. Use another',
@@ -126,6 +132,7 @@ export default class AuthController {
 				message: 'User account successfully created',
 			})
 		} catch (error) {
+			Logger.error({err: error}, "Account creation was unsuccessful")
 			console.log('Signup error ==>', error)
 			return badRequestResponse({
 				response,
@@ -142,6 +149,7 @@ export default class AuthController {
 			const verifyUser = await VerifyUser.query().where('token', token).first()
 
 			if (!verifyUser) {
+				Logger.error({err: new Error("Invalid token")}, "token is invalid")
 				return badRequestResponse({
 					response,
 					message: 'Invalid token',
@@ -208,6 +216,7 @@ export default class AuthController {
 		const emailTokenExists = await VerifyUser.query().where('email', email).preload('user').first()
 
 		if (!emailTokenExists) {
+			Logger.error({err: new Error("OTP expired or invalid")}, "request new otp code, previous code is invalid or expired")
 			return badRequestResponse({
 				response,
 				message: 'request new otp code, previous code is invalid or expired',
@@ -257,7 +266,7 @@ export default class AuthController {
 				})
 			})
 		} catch (error) {
-			Logger.error({ err: new Error('failed to send otp') }, error)
+			Logger.error({ err: error }, 'failed to send otp')
 			return badRequestResponse({ response, message: 'failed to send OTP', error })
 		}
 	}
