@@ -21,7 +21,8 @@ import UpdateUserValidator from 'App/Validators/UpdateUserValidator'
 import ChangePasswordValidator from 'App/Validators/ChangePasswordValidator'
 import { DateTime } from 'luxon'
 import { generateOtp } from 'App/Utils/generateOtp'
-import { Request } from '@adonisjs/core/build/standalone'
+import ForgotPasswordValidator from 'App/Validators/ForgotPasswordValidator'
+import ResetPassword from 'App/Models/ResetPassword'
 
 export default class AuthController {
 	public async login({ auth, request, response }: HttpContextContract) {
@@ -31,7 +32,10 @@ export default class AuthController {
 			const user = await User.query().where('email', email).whereNull('deleted_at').first()
 
 			if (!user) {
-				Logger.error({err: new Error("Invalid email or password")}, "Invalid email or password when the user is not found")
+				Logger.error(
+					{ err: new Error('Invalid email or password') },
+					'Invalid email or password when the user is not found',
+				)
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid email or password',
@@ -39,7 +43,10 @@ export default class AuthController {
 			}
 
 			if (!(await Hash.verify(user.password, password))) {
-				Logger.error({err: new Error("Invalid email or password")}, "Invalid email or password if password does not match exixting password")
+				Logger.error(
+					{ err: new Error('Invalid email or password') },
+					'Invalid email or password if password does not match exixting password',
+				)
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid email or password',
@@ -49,13 +56,19 @@ export default class AuthController {
 			const token = await auth.use('api').generate(user, { expiresIn: '30mins' })
 
 			if (user.status === 'pending') {
-				Logger.error({err: new Error("Account not verified")}, "Account not verified when user has not verified their email")
+				Logger.error(
+					{ err: new Error('Account not verified') },
+					'Account not verified when user has not verified their email',
+				)
 				return unauthorizedResponse({
 					response,
 					message: `Kindly verify your account to proceed`,
 				})
 			} else if (user.status === 'banned') {
-				Logger.error({err: new Error("Account is banned")}, "This account is banned , kindly contact support")
+				Logger.error(
+					{ err: new Error('Account is banned') },
+					'This account is banned , kindly contact support',
+				)
 				return unauthorizedResponse({
 					response,
 					message: `Your account has been banned, kindly contact support`,
@@ -72,7 +85,7 @@ export default class AuthController {
 			})
 		} catch (error) {
 			console.log('login error', error.messages)
-			Logger.error({err: error.messages}, "The Login us unsuccessful")
+			Logger.error({ err: error.messages }, 'The Login us unsuccessful')
 			return badRequestResponse({
 				response,
 				message: 'Unsuccessul Login',
@@ -90,7 +103,10 @@ export default class AuthController {
 			const emailExists = await User.query().where('email', email).first()
 
 			if (emailExists) {
-				Logger.error({err: new Error("Email alredy exist")}, "Email address provided already exist in the database")
+				Logger.error(
+					{ err: new Error('Email alredy exist') },
+					'Email address provided already exist in the database',
+				)
 				return badRequestResponse({
 					response,
 					message: 'Email address exists. Use another',
@@ -132,7 +148,7 @@ export default class AuthController {
 				message: 'User account successfully created',
 			})
 		} catch (error) {
-			Logger.error({err: error}, "Account creation was unsuccessful")
+			Logger.error({ err: error }, 'Account creation was unsuccessful')
 			console.log('Signup error ==>', error)
 			return badRequestResponse({
 				response,
@@ -142,6 +158,55 @@ export default class AuthController {
 		}
 	}
 
+	public async forgotPassword({ request, response }: HttpContextContract) {
+		try {
+			const { email } = await request.validate(ForgotPasswordValidator)
+
+			const userExists = await User.query().where('email', email).first()
+
+			if (!userExists) {
+				throw new Error('No user registered with that email address')
+			}
+
+			const tokenExists = await ResetPassword.query().where('email', email).first()
+
+			if (tokenExists) {
+				await tokenExists.delete()
+			}
+
+			const token = generateOtp()
+
+			const resetPassword = new ResetPassword()
+			resetPassword.token = token
+			resetPassword.email = userExists.email
+
+			await resetPassword.save()
+
+			await Mail.sendLater((message) => {
+				const data = {
+					user: userExists.firstName,
+					otp: token,
+				}
+				message
+					.from('support@petmatehq.com')
+					.to(email)
+					.subject('Verification Email')
+					.htmlView('emails/forgotPassword', data)
+			})
+
+			return response.status(200).json({
+				status: true,
+				message: 'Password reset token has been sent to your email',
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'Failed to resend')
+			return badRequestResponse({
+				response,
+				message: 'Bad request, try again',
+				error,
+			})
+		}
+	}
 
 	public async verify({ request, response }: HttpContextContract) {
 		try {
@@ -149,7 +214,7 @@ export default class AuthController {
 			const verifyUser = await VerifyUser.query().where('token', token).first()
 
 			if (!verifyUser) {
-				Logger.error({err: new Error("Invalid token")}, "token is invalid")
+				Logger.error({ err: new Error('Invalid token') }, 'token is invalid')
 				return badRequestResponse({
 					response,
 					message: 'Invalid token',
@@ -159,7 +224,7 @@ export default class AuthController {
 			const user = await User.query().where('email', verifyUser.email).first()
 
 			if (!user) {
-				Logger.error({err: new Error("Invalid token")}, "Invalid token if user is not found")
+				Logger.error({ err: new Error('Invalid token') }, 'Invalid token if user is not found')
 				return badRequestResponse({
 					response,
 					message: 'Invalid user token',
@@ -177,7 +242,7 @@ export default class AuthController {
 				message: 'User successfully verified',
 			})
 		} catch (error) {
-			Logger.error({err: error}, "Bad request when token verification fails")
+			Logger.error({ err: error }, 'Bad request when token verification fails')
 			return badRequestResponse({
 				response,
 				message: 'Bad request, try again',
@@ -190,7 +255,7 @@ export default class AuthController {
 		try {
 			const user = auth.user
 			if (!user) {
-				Logger.error({err: new Error("user not logged in")}, "Kindly login to view this resource")
+				Logger.error({ err: new Error('user not logged in') }, 'Kindly login to view this resource')
 				return unauthorizedResponse({
 					response,
 					message: 'Kindly login to view this resource',
@@ -205,7 +270,7 @@ export default class AuthController {
 				data: { userData },
 			})
 		} catch (error) {
-			Logger.error({err: error}, "User retrival error, something went wrong")
+			Logger.error({ err: error }, 'User retrival error, something went wrong')
 			console.log('user retrieval error', error)
 			return badRequestResponse({
 				response,
@@ -218,39 +283,41 @@ export default class AuthController {
 		const { email } = await request.validate(ResendOtpValidator)
 
 		const emailTokenExists = await VerifyUser.query().where('email', email).preload('user').first()
-		try{
+		try {
 			if (!emailTokenExists) {
-			Logger.error({err: new Error("OTP expired or invalid")}, "request new otp code, previous code is invalid or expired")
-			return badRequestResponse({
-				response,
-				message: 'request new otp code, previous code is invalid or expired',
-			})
-		}
-
-		const user = emailTokenExists.user
-
-		await Mail.sendLater((message) => {
-			const data = {
-				user: user.firstName,
-				otp: emailTokenExists.token,
+				Logger.error(
+					{ err: new Error('OTP expired or invalid') },
+					'request new otp code, previous code is invalid or expired',
+				)
+				return badRequestResponse({
+					response,
+					message: 'request new otp code, previous code is invalid or expired',
+				})
 			}
-			message
-				.from('support@petmate.ng')
-				.to(emailTokenExists.email)
-				.subject('Verification Email')
-				.htmlView('emails/verify', data)
-		})
 
-		return successfulResponse({
-			response,
-			message: 'OTP code has been resent',
-		})
+			const user = emailTokenExists.user
 
-		}catch(error){
-			Logger.error({err: error}, "Failed to resend OTP")
+			await Mail.sendLater((message) => {
+				const data = {
+					user: user.firstName,
+					otp: emailTokenExists.token,
+				}
+				message
+					.from('support@petmate.ng')
+					.to(emailTokenExists.email)
+					.subject('Verification Email')
+					.htmlView('emails/verify', data)
+			})
+
+			return successfulResponse({
+				response,
+				message: 'OTP code has been resent',
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'Failed to resend OTP')
 			return badRequestResponse({
 				response,
-				message: "Failed to resend OTP"
+				message: 'Failed to resend OTP',
 			})
 		}
 	}
@@ -289,7 +356,10 @@ export default class AuthController {
 		try {
 			const user = auth.user
 			if (!user) {
-				Logger.error({err: new Error("User logged in")}, "Invalid user credentials when the user is not logged in")
+				Logger.error(
+					{ err: new Error('User logged in') },
+					'Invalid user credentials when the user is not logged in',
+				)
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid user credentials',
@@ -299,7 +369,10 @@ export default class AuthController {
 			const res = await auth.use('api').verifyCredentials(user.email, oldPassword)
 
 			if (!res) {
-				Logger.error({err: new Error("Old password incorrect")}, "password entered does not match old password")
+				Logger.error(
+					{ err: new Error('Old password incorrect') },
+					'password entered does not match old password',
+				)
 				return unauthorizedResponse({
 					response,
 					message: 'Old password incorrect',
@@ -314,7 +387,7 @@ export default class AuthController {
 				message: 'Password changed successfully.',
 			})
 		} catch (error) {
-			Logger.error({err: error}, "Failed to update password")
+			Logger.error({ err: error }, 'Failed to update password')
 			return badRequestResponse({ response, message: 'failed to update password', error })
 		}
 	}
@@ -328,7 +401,7 @@ export default class AuthController {
 			const user: User | null = auth.user ?? null
 
 			if (!user) {
-				Logger.error({err: new Error("User not found")}, "User does not exixt in the database")
+				Logger.error({ err: new Error('User not found') }, 'User does not exixt in the database')
 				return notFoundResponse({ response, message: 'User not found' })
 			}
 
@@ -364,7 +437,7 @@ export default class AuthController {
 
 			return successfulResponse({ response, message: 'Successfully updated user profile' })
 		} catch (error) {
-			Logger.error({err: error}, "Failed to update user")
+			Logger.error({ err: error }, 'Failed to update user')
 			return badRequestResponse({ response, message: 'failed to update user', error })
 		}
 	}
@@ -374,16 +447,16 @@ export default class AuthController {
 			const user: User | null = auth.user ?? null
 
 			if (!user) {
-				Logger.error({err: new Error("User not found")}, "User does not exist in the system")
+				Logger.error({ err: new Error('User not found') }, 'User does not exist in the system')
 				throw new Error('user not found')
 			}
 
 			user.deleted_at = DateTime.now()
-			await user.save()
+			await user.delete()
 
 			return deletedResponse({ response, message: 'successfully deleted account' })
 		} catch (error) {
-			Logger.error({err: error}, "Failed to delete account")
+			Logger.error({ err: error }, 'Failed to delete account')
 			return badRequestResponse({ response, message: 'failed to delete account', error })
 		}
 	}
@@ -413,7 +486,7 @@ export default class AuthController {
 			 * User has explicitly denied the login request
 			 */
 			if (facebook.accessDenied()) {
-				Logger.error({err: new Error("Access denied")}, 'Access with facebook auth was denied')
+				Logger.error({ err: new Error('Access denied') }, 'Access with facebook auth was denied')
 
 				throw new Error('Access was denied')
 			}
@@ -422,7 +495,7 @@ export default class AuthController {
 			 * Unable to verify the CSRF state
 			 */
 			if (facebook.stateMisMatch()) {
-				Logger.error({err: new Error("Mismatched error")}, 'Request expired. Retry again')
+				Logger.error({ err: new Error('Mismatched error') }, 'Request expired. Retry again')
 
 				throw new Error('Request expired. Retry again')
 			}
@@ -431,7 +504,7 @@ export default class AuthController {
 			 * There was an unknown error during the redirect
 			 */
 			if (facebook.hasError()) {
-				Logger.error({err: new Error("unkown error")},"Facebook error not specified")
+				Logger.error({ err: new Error('unkown error') }, 'Facebook error not specified')
 				throw new Error(facebook.getError() ?? 'Error not specified')
 			}
 
@@ -446,7 +519,10 @@ export default class AuthController {
 			 */
 
 			if (!facebookUser.email) {
-				Logger.error({err: new Error("Email Not found")}, 'no email address associated with this account, try creating account with email and password')
+				Logger.error(
+					{ err: new Error('Email Not found') },
+					'no email address associated with this account, try creating account with email and password',
+				)
 
 				throw new Error(
 					'no email address associated with this account, try creating account with email and password',
@@ -474,14 +550,13 @@ export default class AuthController {
 				data: { user },
 			})
 		} catch (error) {
-			Logger.error({err:error}, 'Bad request')
+			Logger.error({ err: error }, 'Bad request')
 
 			return badRequestResponse({
 				response,
 				message: 'failed to handle facebook auth callback',
 				error,
 			})
-			
 		}
 	}
 
@@ -493,7 +568,7 @@ export default class AuthController {
 			 * User has explicitly denied the login request
 			 */
 			if (google.accessDenied()) {
-				Logger.error({err: new Error("Access denied")}, 'Access with google auth was denied')
+				Logger.error({ err: new Error('Access denied') }, 'Access with google auth was denied')
 
 				throw new Error('Access was denied')
 			}
@@ -502,7 +577,7 @@ export default class AuthController {
 			 * Unable to verify the CSRF state
 			 */
 			if (google.stateMisMatch()) {
-				Logger.error({err: new Error("Mismatched error")}, 'Request expired. Retry again')
+				Logger.error({ err: new Error('Mismatched error') }, 'Request expired. Retry again')
 
 				throw new Error('Request expired. Retry again')
 			}
@@ -511,7 +586,7 @@ export default class AuthController {
 			 * There was an unknown error during the redirect
 			 */
 			if (google.hasError()) {
-				Logger.error({err: new Error("unkown error")}, "Google error not specified")
+				Logger.error({ err: new Error('unkown error') }, 'Google error not specified')
 
 				throw new Error(google.getError() ?? 'Error not specified')
 			}
@@ -527,40 +602,42 @@ export default class AuthController {
 			 */
 
 			if (!googleUser.email) {
-
-				Logger.error({err: new Error("Email Not found")}, 'no email address associated with this account, try creating account with email and password')
+				Logger.error(
+					{ err: new Error('Email Not found') },
+					'no email address associated with this account, try creating account with email and password',
+				)
 
 				throw new Error(
 					'no email address associated with this account, try creating account with email and password',
 				)
 			}
-				const user = await User.firstOrCreate(
-					{
-						email: googleUser.email,
-					},
-					{
-						status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
-						rememberMeToken: googleUser.token.token,
-					},
-				)
-				/**
-				 * Login user using the web guard
-				 */
-				await auth.use('api').login(user)
+			const user = await User.firstOrCreate(
+				{
+					email: googleUser.email,
+				},
+				{
+					status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
+					rememberMeToken: googleUser.token.token,
+				},
+			)
+			/**
+			 * Login user using the web guard
+			 */
+			await auth.use('api').login(user)
 
-				return successfulResponse({
-					response,
-					message: 'successfuly handled google auth callback',
-					data: { user },
-				})
-			}catch (error) {
-				Logger.error({err:error}, 'Bad request')
+			return successfulResponse({
+				response,
+				message: 'successfuly handled google auth callback',
+				data: { user },
+			})
+		} catch (error) {
+			Logger.error({ err: error }, 'Bad request')
 
-				return badRequestResponse({
-					response,
-					message: 'failed to handle google auth callback',
-					error,
-				})
-		}		
+			return badRequestResponse({
+				response,
+				message: 'failed to handle google auth callback',
+				error,
+			})
+		}
 	}
 }
