@@ -654,8 +654,6 @@ export default class AuthController {
 			const user = await User.firstOrCreate(
 				{
 					email: googleUser.email,
-					firstName: googleUser.name.split(' ')[0],
-					lastName: googleUser.name.split(' ')[1],
 				},
 				{
 					status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
