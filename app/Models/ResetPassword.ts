@@ -28,5 +28,5 @@ export default class ResetPassword extends BaseModel {
 	public updated_at: DateTime
 
 	@column.dateTime()
-	public deleted_at: DateTime
+	public deleted_at: DateTime | null
 }
