@@ -90,7 +90,7 @@ export default class AuthController {
 			const emailExists = await User.query().where('email', email).first()
 
 			if (emailExists) {
-				Logger.error({err: new Error("Email alredy aexist")}, "Email address provided already exist in the database")
+				Logger.error({err: new Error("Email alredy exist")}, "Email address provided already exist in the database")
 				return badRequestResponse({
 					response,
 					message: 'Email address exists. Use another',
