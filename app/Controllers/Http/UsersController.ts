@@ -218,8 +218,8 @@ export default class AuthController {
 		const { email } = await request.validate(ResendOtpValidator)
 
 		const emailTokenExists = await VerifyUser.query().where('email', email).preload('user').first()
-
-		if (!emailTokenExists) {
+		try{
+			if (!emailTokenExists) {
 			Logger.error({err: new Error("OTP expired or invalid")}, "request new otp code, previous code is invalid or expired")
 			return badRequestResponse({
 				response,
@@ -245,6 +245,14 @@ export default class AuthController {
 			response,
 			message: 'OTP code has been resent',
 		})
+
+		}catch(error){
+			Logger.error({err: error}, "Failed to resend OTP")
+			return badRequestResponse({
+				response,
+				message: "Failed to resend OTP"
+			})
+		}
 	}
 
 	public async sendOtp({ request, response }: HttpContextContract) {
