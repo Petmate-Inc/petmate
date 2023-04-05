@@ -19,7 +19,7 @@ Route.get('/api/v1/', async () => {
 Route.group(() => {
 	Route.post('login', 'UsersController.login')
 	Route.post('signup', 'UsersController.signup')
-	Route.post('verify-email/:token', 'UsersController.verify')
+	Route.post('g', 'UsersController.verify')
 	Route.post('resend-otp', 'UsersController.resendOtp')
 	Route.get('verify-user/:token', 'UsersController.verify')
 	Route.post('resend-verification-link', 'UsersController.resendVerificationLink')
