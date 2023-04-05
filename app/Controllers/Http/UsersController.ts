@@ -23,7 +23,10 @@ import { DateTime } from 'luxon'
 import { generateOtp } from 'App/Utils/generateOtp'
 import ForgotPasswordValidator from 'App/Validators/ForgotPasswordValidator'
 import ResetPassword from 'App/Models/ResetPassword'
+<<<<<<< HEAD
 import ResetPasswordValidator from 'App/Validators/ResetPasswordValidator'
+=======
+>>>>>>> dev
 
 export default class AuthController {
 	public async login({ auth, request, response }: HttpContextContract) {
@@ -159,6 +162,7 @@ export default class AuthController {
 		}
 	}
 
+<<<<<<< HEAD
 	public async resetPassword({ request, response }: HttpContextContract) {
 		try {
 			const { otp, newPassword } = await request.validate(ResetPasswordValidator)
@@ -201,6 +205,8 @@ export default class AuthController {
 		}
 	}
 
+=======
+>>>>>>> dev
 	public async forgotPassword({ request, response }: HttpContextContract) {
 		try {
 			const { email } = await request.validate(ForgotPasswordValidator)
@@ -565,6 +571,13 @@ export default class AuthController {
 			if (!facebookUser.email) {
 				Logger.error(
 					{ err: new Error('Email Not found') },
+<<<<<<< HEAD
+=======
+					'no email address associated with this account, try creating account with email and password',
+				)
+
+				throw new Error(
+>>>>>>> dev
 					'no email address associated with this account, try creating account with email and password',
 				)
 
@@ -594,7 +607,11 @@ export default class AuthController {
 				data: { user },
 			})
 		} catch (error) {
+<<<<<<< HEAD
 			Logger.error({ err: error }, 'Error signing in the user with facebook')
+=======
+			Logger.error({ err: error }, 'Bad request')
+>>>>>>> dev
 
 			return badRequestResponse({
 				response,
