@@ -159,6 +159,7 @@ export default class AuthController {
 			const user = await User.query().where('email', verifyUser.email).first()
 
 			if (!user) {
+				Logger.error({err: new Error("Invalid token")}, "Invalid token if user is not found")
 				return badRequestResponse({
 					response,
 					message: 'Invalid user token',
@@ -176,6 +177,7 @@ export default class AuthController {
 				message: 'User successfully verified',
 			})
 		} catch (error) {
+			Logger.error({err: error}, "Bad request when token verification fails")
 			return badRequestResponse({
 				response,
 				message: 'Bad request, try again',
@@ -188,6 +190,7 @@ export default class AuthController {
 		try {
 			const user = auth.user
 			if (!user) {
+				Logger.error({err: new Error("user not logged in")}, "Kindly login to view this resource")
 				return unauthorizedResponse({
 					response,
 					message: 'Kindly login to view this resource',
@@ -202,6 +205,7 @@ export default class AuthController {
 				data: { userData },
 			})
 		} catch (error) {
+			Logger.error({err: error}, "User retrival error, something went wrong")
 			console.log('user retrieval error', error)
 			return badRequestResponse({
 				response,
@@ -277,6 +281,7 @@ export default class AuthController {
 		try {
 			const user = auth.user
 			if (!user) {
+				Logger.error({err: new Error("User logged in")}, "Invalid user credentials when the user is not logged in")
 				return unauthorizedResponse({
 					response,
 					message: 'Invalid user credentials',
@@ -286,6 +291,7 @@ export default class AuthController {
 			const res = await auth.use('api').verifyCredentials(user.email, oldPassword)
 
 			if (!res) {
+				Logger.error({err: new Error("Old password incorrect")}, "password entered does not match old password")
 				return unauthorizedResponse({
 					response,
 					message: 'Old password incorrect',
@@ -300,6 +306,7 @@ export default class AuthController {
 				message: 'Password changed successfully.',
 			})
 		} catch (error) {
+			Logger.error({err: error}, "Failed to update password")
 			return badRequestResponse({ response, message: 'failed to update password', error })
 		}
 	}
@@ -313,6 +320,7 @@ export default class AuthController {
 			const user: User | null = auth.user ?? null
 
 			if (!user) {
+				Logger.error({err: new Error("User not found")}, "User does not exixt in the database")
 				return notFoundResponse({ response, message: 'User not found' })
 			}
 
@@ -348,6 +356,7 @@ export default class AuthController {
 
 			return successfulResponse({ response, message: 'Successfully updated user profile' })
 		} catch (error) {
+			Logger.error({err: error}, "Failed to update user")
 			return badRequestResponse({ response, message: 'failed to update user', error })
 		}
 	}
@@ -357,6 +366,7 @@ export default class AuthController {
 			const user: User | null = auth.user ?? null
 
 			if (!user) {
+				Logger.error({err: new Error("User not found")}, "User does not exist in the system")
 				throw new Error('user not found')
 			}
 
@@ -365,6 +375,7 @@ export default class AuthController {
 
 			return deletedResponse({ response, message: 'successfully deleted account' })
 		} catch (error) {
+			Logger.error({err: error}, "Failed to delete account")
 			return badRequestResponse({ response, message: 'failed to delete account', error })
 		}
 	}
