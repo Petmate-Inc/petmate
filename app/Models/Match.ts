@@ -34,11 +34,4 @@ export default class Match extends BaseModel {
 
   @column.dateTime()
 	public deleted_at: DateTime
-
-  @beforeSave()
-	public static async hashPassword(user: User) {
-		if (user.$dirty.password) {
-			user.password = await Hash.make(user.password)
-		}
-	}
 }
