@@ -339,7 +339,6 @@ export default class AuthController {
 			}
 
 			const user = emailTokenExists.user
-			console.log(emailTokenExists.token)
 
 			await Mail.sendLater((message) => {
 				const data = {
