@@ -1,6 +1,6 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class CreateMatches extends BaseSchema {
+export default class Matches extends BaseSchema {
   protected tableName = 'matches'
 
   public async up () {
