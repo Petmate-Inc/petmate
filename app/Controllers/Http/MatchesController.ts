@@ -4,14 +4,13 @@ import Logger from '@ioc:Adonis/Core/Logger'
 import { badRequestResponse, notFoundResponse } from 'App/Helpers/Responses'
 import CreateMatchValidator from 'App/Validators/CreateMatchValidator'
 import User from 'App/Models/User'
-import Pet from 'App/Models/Pet'
 import Match from 'App/Models/Match'
 
 export default class MatchesController {
 
     public async createMatch({auth, response, request}:HttpContextContract){
 
-        const{pet_id, breeder_id, accepted} = await request.validate(CreateMatchValidator)
+        const{pet_id} = await request.validate(CreateMatchValidator)
 
         try{
 
@@ -22,11 +21,14 @@ export default class MatchesController {
                 return notFoundResponse({response, message:'User is not found'})
             }
 
-            const petId = uuidv4
+            const petId = uuidv4()
+            const breeder_id = user.uuid
 			const match = new Match()
+            match.pet_id = pet_id
             match.uuid = petId
             match.breeder_id = breeder_id
-            match.accepted = accepted
+
+            await match.save()
 
 
         }catch(error){
