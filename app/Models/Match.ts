@@ -22,10 +22,10 @@ export default class Match extends BaseModel {
 	public pet_id: string
 
 	@column()
-	public user_id: string
+	public breeder_id: string
 
 	@hasOne(() => User)
-	public user: HasOne<typeof User>
+	public breeder: HasOne<typeof User>
 
 	@hasOne(() => Pet)
 	public pet: HasOne<typeof Pet>
