@@ -1,10 +1,10 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class CreateMatches extends BaseSchema {
-  protected matches = 'create_matches'
+  protected tableName = 'create_matches'
 
   public async up () {
-    this.schema.createTable(this.matches, (table) => {
+    this.schema.createTable(this.tableName, (table) => {
       table.increments('id')
       table.string('uuid')
       table.string('pet_id')
@@ -21,6 +21,6 @@ export default class CreateMatches extends BaseSchema {
   }
 
   public async down () {
-    this.schema.dropTable(this.matches)
+    this.schema.dropTable(this.tableName)
   }
 }
