@@ -44,7 +44,16 @@ Route.group(() => {
 		Route.patch('/update-password', 'UsersController.updatePassword')
 		Route.patch('/', 'UsersController.update')
 		Route.delete('/', 'UsersController.delete')
+	})
+		.middleware('auth')
+		.prefix('user/')
+
+	Route.group(() => {
 		Route.post('/match-pet', 'MatchesController.createMatch')
+		Route.get('get-matches', 'MatchesController.getMatches')
+		Route.get('get-single-match/:uuid', 'MatchesController.getSingleMatch')
+		Route.patch('update-match/:uuid', 'MatchesController.updateMatch')
+		Route.patch('delete-match', 'MatchesController.deleteMatch')
 	})
 		.middleware('auth')
 		.prefix('user/')
