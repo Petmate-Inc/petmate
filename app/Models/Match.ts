@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuidv4 } from 'uuid'
+import User from './User'
+import Pet from './Pet'
 
 export default class Match extends BaseModel {
 	@beforeSave()
@@ -21,6 +23,12 @@ export default class Match extends BaseModel {
 
 	@column()
 	public user_id: string
+
+	@hasOne(() => User)
+	public user: HasOne<typeof User>
+
+	@hasOne(() => Pet)
+	public pet: HasOne<typeof Pet>
 
 	@column()
 	public accepted: boolean
