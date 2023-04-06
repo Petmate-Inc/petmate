@@ -26,12 +26,12 @@ export default class MatchesController {
 				throw new Error('Pet not found')
 			}
 
-			const breeder_id = user.uuid
+			const breeder_uuid = user.uuid
 
 			const match = new Match()
-			match.pet_id = pet_id
+			match.petUuid = pet_id
 			match.uuid = pet_id
-			match.breeder_id = breeder_id
+			match.breederUuid = breeder_uuid
 
 			await match.save()
 
@@ -57,7 +57,11 @@ export default class MatchesController {
 				throw new Error('User not found')
 			}
 
-			const matches = await Match.query().where('user_id', user.uuid).whereNull('deleted_at')
+			const matches = await Match.query()
+				.where('breeder_uuid', user.uuid)
+				.whereNull('deleted_at')
+				.preload('breeder')
+				.preload('pet')
 
 			return successfulResponse({
 				response,
@@ -68,8 +72,8 @@ export default class MatchesController {
 			Logger.error({ err: error }, 'Failed to fetch matches')
 			return badRequestResponse({
 				response,
-				message: 'Failed to create new Match',
-				error,
+				message: 'Failed to fetch new Match',
+				error: error.message ?? error,
 			})
 		}
 	}
@@ -86,8 +90,10 @@ export default class MatchesController {
 
 			const match = await Match.query()
 				.where('uuid', matchId)
-				.where('user_id', user.uuid)
+				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
+				.preload('breeder')
+				.preload('pet')
 				.first()
 
 			if (!match) {
@@ -119,7 +125,7 @@ export default class MatchesController {
 
 			const match = await Match.query()
 				.where('uuid', matchId)
-				.where('user_id', user.uuid)
+				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
 				.first()
 
@@ -152,7 +158,7 @@ export default class MatchesController {
 
 			const match = await Match.query()
 				.where('uuid', matchId)
-				.where('user_id', user.uuid)
+				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
 				.first()
 

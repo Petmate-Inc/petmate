@@ -7,8 +7,8 @@ export default class CreateMatches extends BaseSchema {
 		this.schema.createTable(this.tableName, (table) => {
 			table.increments('id')
 			table.string('uuid')
-			table.string('pet_id')
-			table.string('breeder_id')
+			table.string('pet_uuid')
+			table.string('breeder_uuid').references('uuid').inTable('users')
 			table.boolean('accepted').defaultTo(false)
 			table.timestamp('created_at', { useTz: true })
 			table.timestamp('updated_at', { useTz: true })

@@ -53,7 +53,7 @@ Route.group(() => {
 		Route.get('get-matches', 'MatchesController.getMatches')
 		Route.get('get-single-match/:uuid', 'MatchesController.getSingleMatch')
 		Route.patch('update-match/:uuid', 'MatchesController.updateMatch')
-		Route.patch('delete-match', 'MatchesController.deleteMatch')
+		Route.patch('delete-match/:uuid', 'MatchesController.deleteMatch')
 	})
 		.middleware('auth')
 		.prefix('user/')

@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, beforeSave, hasOne, HasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave, belongsTo, BelongsTo } from '@ioc:Adonis/Lucid/Orm'
 import { v4 as uuidv4 } from 'uuid'
 import User from './User'
 import Pet from './Pet'
@@ -19,16 +19,16 @@ export default class Match extends BaseModel {
 	public uuid: string
 
 	@column()
-	public pet_id: string
+	public petUuid: string
 
 	@column()
-	public breeder_id: string
+	public breederUuid: string
 
-	@hasOne(() => User)
-	public breeder: HasOne<typeof User>
+	@belongsTo(() => User, { foreignKey: 'breederUuid', localKey: 'uuid' })
+	public breeder: BelongsTo<typeof User>
 
-	@hasOne(() => Pet)
-	public pet: HasOne<typeof Pet>
+	@belongsTo(() => Pet)
+	public pet: BelongsTo<typeof Pet>
 
 	@column()
 	public accepted: boolean
