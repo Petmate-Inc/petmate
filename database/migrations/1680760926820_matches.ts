@@ -1,7 +1,7 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class CreateMatches extends BaseSchema {
-  protected tableName = 'create_matches'
+  protected tableName = 'matches'
 
   public async up () {
     this.schema.createTable(this.tableName, (table) => {

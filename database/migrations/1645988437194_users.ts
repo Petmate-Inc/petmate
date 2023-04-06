@@ -25,6 +25,7 @@ export default class UsersSchema extends BaseSchema {
     })
   }
 
+
   public async down() {
     this.schema.dropTable(this.tableName)
   }
