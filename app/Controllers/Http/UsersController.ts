@@ -257,7 +257,7 @@ export default class AuthController {
 			const verifyUser = await VerifyUser.query().where('token', token).first()
 
 			if (!verifyUser) {
-				Logger.error({err: new Error("Invalid token")}, "token is invalid")
+				Logger.error({ err: new Error('Invalid token') }, 'token is invalid')
 				return badRequestResponse({
 					response,
 					message: 'Invalid token',
