@@ -131,6 +131,8 @@ export default class AuthController {
 				verifyUsers.token = token
 				await verifyUsers.useTransaction(trx).save()
 
+				Logger.info({ email: email, token }, 'Log user token')
+
 				await Mail.sendLater((message) => {
 					const data = {
 						user: user.firstName,

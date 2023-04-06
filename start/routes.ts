@@ -20,7 +20,7 @@ Route.group(() => {
 	Route.post('login', 'UsersController.login')
 	Route.post('signup', 'UsersController.signup')
 	Route.post('resend-otp', 'UsersController.resendOtp')
-	Route.get('verify-email/:token', 'UsersController.verify')
+	Route.post('verify-email/:token', 'UsersController.verify')
 	Route.post('resend-verification-link', 'UsersController.resendVerificationLink')
 	Route.post('recover-password', 'UsersController.forgotPassword')
 	Route.patch('change-password', 'UsersController.changePassword').middleware('auth')

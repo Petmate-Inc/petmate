@@ -6,6 +6,7 @@ import User from 'App/Models/User'
 import Match from 'App/Models/Match'
 import { DateTime } from 'luxon'
 import UpdateMatchValidator from 'App/Validators/UpdateMatchValidator'
+import Pet from 'App/Models/Pet'
 
 export default class MatchesController {
 	public async createMatch({ auth, response, request }: HttpContextContract) {
@@ -19,21 +20,31 @@ export default class MatchesController {
 				return notFoundResponse({ response, message: 'User is not found' })
 			}
 
-			const petId = pet_id
+			const petExists = await Pet.query().where('uuid', pet_id).whereNull('deleted_at').first()
+
+			if (!petExists) {
+				throw new Error('Pet not found')
+			}
+
 			const breeder_id = user.uuid
 
 			const match = new Match()
 			match.pet_id = pet_id
-			match.uuid = petId
+			match.uuid = pet_id
 			match.breeder_id = breeder_id
 
 			await match.save()
+
+			return successfulResponse({
+				response,
+				message: 'successfully created match',
+			})
 		} catch (error) {
 			Logger.error({ err: error }, 'Failed to create new Match')
 			return badRequestResponse({
 				response,
 				message: 'Failed to create new Match',
-				error,
+				error: error.message ?? error,
 			})
 		}
 	}
