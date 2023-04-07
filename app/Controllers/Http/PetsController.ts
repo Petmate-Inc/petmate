@@ -16,15 +16,51 @@ import PetPicture from 'App/Models/PetPicture'
 import User from 'App/Models/User'
 import { getDogBreeds } from 'App/Utils/getDogBreeds'
 import UpdatePetValidator from 'App/Validators/UpdatePetValidator'
+import FetchPetValidator from 'App/Validators/FetchPetValidator'
 
 export default class PetsController {
-	public async fetchAllPets({ response }: HttpContextContract) {
+	public async fetchAllPets({ request, response }: HttpContextContract) {
 		try {
-			const pets = await Pet.query().whereNull('deleted_at').preload('owner').preload('pictures')
+			const { breed, name, age, gender, classification, search } = await request.validate(
+				FetchPetValidator,
+			)
+
+			const pets = Pet.query()
+
+			if (breed) {
+				pets.where('breed', breed)
+			}
+
+			if (name) {
+				pets.where('name', name)
+			}
+
+			if (age) {
+				pets.where('age', '>=', age)
+			}
+
+			if (gender) {
+				pets.where('gender', gender)
+			}
+
+			if (classification) {
+				pets.where('classification', classification)
+			}
+
+			if (search) {
+				pets
+					.where('classification', 'like', `%${search}%`)
+					.orWhere('breed', 'like', `%${search}%`)
+					.orWhere('color', 'like', `%${search}%`)
+					.orWhere('name', 'like', `%${search}%`)
+			}
+
+			const res = await pets.whereNull('deleted_at').preload('owner').preload('pictures')
+
 			return successfulResponse({
 				response,
 				message: 'successfully fetched all pets',
-				data: pets,
+				data: res,
 			})
 		} catch (error) {
 			Logger.error({ err: error }, 'Failed to fetch all pets')
@@ -34,8 +70,6 @@ export default class PetsController {
 			})
 		}
 	}
-
-	// New files in between
 
 	public async fetchSinglePet({ request, response }: HttpContextContract) {
 		try {
