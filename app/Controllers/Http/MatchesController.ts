@@ -48,7 +48,7 @@ export default class MatchesController {
 			})
 		}
 	}
-	public async getMatches({ auth, request, response }: HttpContextContract) {
+	public async getMatches({ auth, response }: HttpContextContract) {
 		try {
 			const user: User | null = auth.user ?? null
 
