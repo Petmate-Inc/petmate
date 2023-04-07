@@ -35,17 +35,17 @@ export default class Pet extends BaseModel {
 	@column()
 	public gender: string
 
-	@hasMany(() => PetPicture)
+	@hasMany(() => PetPicture, { foreignKey: 'petId', localKey: 'uuid' })
 	public pictures: HasMany<typeof PetPicture>
 
 	@hasOne(() => VetCard)
 	public vetCard: HasOne<typeof VetCard>
 
-	@hasOne(() => User)
-	public owner: HasOne<typeof User>
-
 	@column()
-	public owner_id: string
+	public ownerId: string
+
+	@hasOne(() => User, { foreignKey: 'uuid', localKey: 'ownerId' })
+	public owner: HasOne<typeof User>
 
 	@column()
 	public verificationStatus: string

@@ -20,13 +20,14 @@ import UpdatePetValidator from 'App/Validators/UpdatePetValidator'
 export default class PetsController {
 	public async fetchAllPets({ response }: HttpContextContract) {
 		try {
-			const pets = await Pet.query().whereNull('deleted_at')
+			const pets = await Pet.query().whereNull('deleted_at').preload('owner').preload('pictures')
 			return successfulResponse({
 				response,
 				message: 'successfully fetched all pets',
 				data: pets,
 			})
 		} catch (error) {
+			Logger.error({ err: error }, 'Failed to fetch all pets')
 			return badRequestResponse({
 				response,
 				message: 'failed to fetch all pets',
@@ -34,14 +35,18 @@ export default class PetsController {
 		}
 	}
 
-	// New files in between 
-
+	// New files in between
 
 	public async fetchSinglePet({ request, response }: HttpContextContract) {
 		try {
 			const petId = request.param('uuid')
 
-			const pet = await Pet.query().where('uuid', petId).whereNull('deleted_at').first()
+			const pet = await Pet.query()
+				.where('uuid', petId)
+				.whereNull('deleted_at')
+				.preload('owner')
+				.preload('pictures')
+				.first()
 
 			if (!pet) {
 				return notFoundResponse({
@@ -62,9 +67,6 @@ export default class PetsController {
 			})
 		}
 	}
-
-
-	// Creating description for git
 
 	public async fetchMyPets({ auth, response }: HttpContextContract) {
 		try {
@@ -122,7 +124,7 @@ export default class PetsController {
 			pet.gender = gender
 			pet.age = age
 			pet.age_period = age_period
-			pet.owner_id = owner.uuid
+			pet.ownerId = owner.uuid
 			await pet.save()
 
 			const petPicture = new PetPicture()
