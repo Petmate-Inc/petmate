@@ -48,9 +48,12 @@ export default class MatchesController {
 			})
 		}
 	}
-	public async getMatches({ auth, response }: HttpContextContract) {
+	public async getMatches({ auth, request, response }: HttpContextContract) {
 		try {
 			const user: User | null = auth.user ?? null
+
+			const { pet_id, search } = await request.validate(CreateMatchValidator)
+
 
 			if (!user) {
 				Logger.error({ err: new Error('Not found') }, 'user is not found')
@@ -59,6 +62,8 @@ export default class MatchesController {
 
 			const matches = await Match.query()
 				.where('breeder_uuid', user.uuid)
+				.where('pet_id', pet_id)
+				.where('pet_id', 'like', `%${search}%`)
 				.whereNull('deleted_at')
 				.preload('breeder')
 				.preload('pet')

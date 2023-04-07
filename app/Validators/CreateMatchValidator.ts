@@ -5,6 +5,7 @@ export default class CreateMatchValidator {
 	constructor(protected ctx: HttpContextContract) {}
 	public schema = schema.create({
 		pet_id: schema.string(),
+		search: schema.string.optional()
 	})
 
 	public messages: CustomMessages = {}
