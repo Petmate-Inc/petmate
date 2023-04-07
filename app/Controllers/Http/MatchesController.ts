@@ -52,9 +52,6 @@ export default class MatchesController {
 		try {
 			const user: User | null = auth.user ?? null
 
-			const { pet_id, search } = await request.validate(CreateMatchValidator)
-
-
 			if (!user) {
 				Logger.error({ err: new Error('Not found') }, 'user is not found')
 				throw new Error('User not found')
@@ -62,8 +59,6 @@ export default class MatchesController {
 
 			const matches = await Match.query()
 				.where('breeder_uuid', user.uuid)
-				.where('pet_id', pet_id)
-				.where('pet_id', 'like', `%${search}%`)
 				.whereNull('deleted_at')
 				.preload('breeder')
 				.preload('pet')
