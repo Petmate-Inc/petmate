@@ -51,7 +51,7 @@ export default class MatchesController {
 	public async getMatches({ auth, request, response }: HttpContextContract) {
 		try {
 			const user: User | null = auth.user ?? null
-			const {accepted} = await request.validate(UpdateMatchValidator)
+			const { accepted } = await request.validate(CreateMatchValidator)
 
 			if (!user) {
 				Logger.error({ err: new Error('Not found') }, 'user is not found')
