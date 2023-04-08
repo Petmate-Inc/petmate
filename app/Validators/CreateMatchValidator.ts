@@ -4,8 +4,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 export default class CreateMatchValidator {
 	constructor(protected ctx: HttpContextContract) {}
 	public schema = schema.create({
-		pet_id : schema.string.optional(),
-		accepted: schema.boolean.optional()
+		pet_id: schema.string(),
 	})
 
 	public messages: CustomMessages = {}
