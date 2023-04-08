@@ -62,6 +62,8 @@ export default class MatchesController {
 				const matchesQuery = Match.query()
 				if (accepted){
 					matchesQuery.where("accepted", accepted)
+
+					Logger.info('accepted', matchesQuery)
 				}
 
 			const matches = await Match.query()
@@ -69,6 +71,8 @@ export default class MatchesController {
 				.whereNull('deleted_at')
 				.preload('breeder')
 				.preload('pet')
+
+				Logger.info('queries', matches)
 
 			return successfulResponse({
 				response,
