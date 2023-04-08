@@ -58,15 +58,16 @@ export default class MatchesController {
 				throw new Error('User not found')
 			}
 
+				const matchesQuery = Match.query()
+				if (accepted){
+					matchesQuery.where("accepted", accepted)
+				}
+
 			const matches = await Match.query()
 				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
 				.preload('breeder')
 				.preload('pet')
-
-			if (accepted){
-				matches.accepted = accepted
-			}
 
 			return successfulResponse({
 				response,
