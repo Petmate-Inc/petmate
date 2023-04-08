@@ -60,10 +60,13 @@ export default class MatchesController {
 
 			const matches = await Match.query()
 				.where('breeder_uuid', user.uuid)
-				.where('accepted', accepted)
 				.whereNull('deleted_at')
 				.preload('breeder')
 				.preload('pet')
+
+			if (accepted){
+				matches.accepted = accepted
+			}
 
 			return successfulResponse({
 				response,
