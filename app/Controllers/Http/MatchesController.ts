@@ -7,6 +7,7 @@ import Match from 'App/Models/Match'
 import { DateTime } from 'luxon'
 import UpdateMatchValidator from 'App/Validators/UpdateMatchValidator'
 import Pet from 'App/Models/Pet'
+import GetMatchValidator from 'App/Validators/GetMatchValidator'
 
 export default class MatchesController {
 	public async createMatch({ auth, response, request }: HttpContextContract) {
@@ -48,7 +49,9 @@ export default class MatchesController {
 			})
 		}
 	}
-	public async getMatches({ auth, response }: HttpContextContract) {
+	public async getMatches({ auth, request, response }: HttpContextContract) {
+		const { accepted } = await request.validate(GetMatchValidator)
+
 		try {
 			const user: User | null = auth.user ?? null
 
@@ -57,7 +60,13 @@ export default class MatchesController {
 				throw new Error('User not found')
 			}
 
-			const matches = await Match.query()
+			const matchesQuery = Match.query()
+
+			if (accepted) {
+				matchesQuery.where('accepted', accepted)
+			}
+
+			const matches = await matchesQuery
 				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
 				.preload('breeder')
