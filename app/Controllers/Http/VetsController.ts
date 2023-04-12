@@ -1,16 +1,22 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { badRequestResponse } from 'App/Helpers/Responses'
 import Logger from '@ioc:Adonis/Core/Logger'
+import geolocation from 'geolocation'
 
 export default class VetsController {
 	public async vetClinics({ response }: HttpContextContract) {
 		try {
+            const navigate = geolocation.getCurrentPosition
+            const lat = navigate.latitude
+            const lng = navigate.longitude
+
 			const axios = require('axios')
 
 			let config = {
 				method: 'get',
 				url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=veterinary_care&keyword=vet_clinics&key=YOUR_API_KEY',
 				headers: {},
+				url2: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}%${lng}&radius=1500&type=veterinary_care&keyword=vet_clinics&key=YOUR_API_KEY`,
 			}
 
 			axios(config)
