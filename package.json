@@ -9,9 +9,9 @@
     "start": "node build/server.js",
     "db": "node ace migration:rollback && node ace migration:run"
   },
-  "engines" : { 
-    "npm" : ">=8.0.0 <9.0.0",
-    "node" : ">=16.0.0 <17.0.0"
+  "engines": {
+    "npm": ">=8.0.0 <9.0.0",
+    "node": ">=16.0.0 <17.0.0"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^5.3.0",
@@ -29,6 +29,7 @@
     "@adonisjs/mail": "^8.1.2",
     "@adonisjs/repl": "^3.1.0",
     "@adonisjs/view": "^6.1.6",
+    "axios": "^1.3.5",
     "cloudinary": "^1.31.0",
     "luxon": "^2.3.1",
     "mysql": "^2.18.1",

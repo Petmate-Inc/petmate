@@ -58,6 +58,13 @@ Route.group(() => {
 		.middleware('auth')
 		.prefix('user/')
 
+	// Route for vets
+	Route.group(() => {
+		Route.get('/vet', 'VetsController.vetClinics')
+	})
+		.middleware('auth')
+		.prefix('user/')
+
 	Route.group(() => {
 		Route.get('/', 'PetsController.fetchAllPets')
 		Route.get('/dog-breeds', 'PetsController.fetchDogBreeds')
