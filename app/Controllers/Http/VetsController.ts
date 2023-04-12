@@ -16,6 +16,7 @@ export default class VetsController {
 				method: 'get',
 				url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670522%2C151.1957362&radius=1500&type=veterinary_care&keyword=vet_clinics&key=YOUR_API_KEY',
 				headers: {},
+                // The google url has a default longitude and latitude so I did this, I don't know if its correct though I couldn't find such in the documentation
 				url2: `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat}%${lng}&radius=1500&type=veterinary_care&keyword=vet_clinics&key=YOUR_API_KEY`,
 			}
 
