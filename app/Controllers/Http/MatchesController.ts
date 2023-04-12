@@ -50,6 +50,7 @@ export default class MatchesController {
 		}
 	}
 	public async getMatches({ auth, request, response }: HttpContextContract) {
+
 		try {
 			const user: User | null = auth.user ?? null
 			const { accepted } = await request.validate(GetMatchValidator)
@@ -59,14 +60,13 @@ export default class MatchesController {
 				throw new Error('User not found')
 			}
 
-				const matchesQuery = Match.query()
-				if (accepted){
-					matchesQuery.where("accepted", accepted)
+			const matchesQuery = Match.query()
 
-					Logger.info('accepted', matchesQuery)
-				}
+			if (accepted) {
+				matchesQuery.where('accepted', accepted)
+			}
 
-			const matches = await Match.query()
+			const matches = await matchesQuery
 				.where('breeder_uuid', user.uuid)
 				.whereNull('deleted_at')
 				.preload('breeder')
