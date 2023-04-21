@@ -74,6 +74,10 @@ Route.group(() => {
 		Route.patch('/:uuid', 'PetsController.updatePet')
 		Route.delete('/:uuid', 'PetsController.deletePet')
 	})
+	// Dogbreed controller
+	Route.group(()=>{
+		Route.get('/', '')
+	})
 		.middleware('auth')
 		.prefix('pets/')
 }).prefix('/api/v1/')
