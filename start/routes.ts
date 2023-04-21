@@ -65,6 +65,14 @@ Route.group(() => {
 		.middleware('auth')
 		.prefix('user/')
 
+	// Dogbreed controller
+	Route.group(() => {
+		Route.get('/breeds', 'DogbreedController.getBreed')
+		Route.get('/facts', 'DogbreedController.getFact')
+		Route.get('/groups', 'DogbreedController.getGroup')
+		Route.patch('/updatebreed/:id', 'DogbreedController.updateBreed')
+	})
+
 	Route.group(() => {
 		Route.get('/', 'PetsController.fetchAllPets')
 		Route.get('/dog-breeds', 'PetsController.fetchDogBreeds')
@@ -73,10 +81,6 @@ Route.group(() => {
 		Route.post('/upload-image', 'PetsController.uploadPetImage')
 		Route.patch('/:uuid', 'PetsController.updatePet')
 		Route.delete('/:uuid', 'PetsController.deletePet')
-	})
-	// Dogbreed controller
-	Route.group(()=>{
-		Route.get('/', '')
 	})
 		.middleware('auth')
 		.prefix('pets/')
