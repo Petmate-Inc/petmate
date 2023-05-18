@@ -72,6 +72,8 @@ Route.group(() => {
 		Route.get('/groups', 'DogbreedController.getGroup')
 		Route.patch('/updatebreed/:id', 'DogbreedController.updateBreed')
 	})
+		.middleware('auth')
+		.prefix('/breeds')
 
 	Route.group(() => {
 		Route.get('/', 'PetsController.fetchAllPets')
