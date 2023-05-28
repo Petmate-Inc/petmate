@@ -1,0 +1,17 @@
+name: petmate
+
+type: 'nodejs:18'
+
+mounts:
+  'web/uploads':
+    source: local
+    source_path: uploads
+disk: 2048
+
+hooks:
+    build: |
+        npm run build        
+
+web:
+  commands: 
+    start: "node build/server.js"
