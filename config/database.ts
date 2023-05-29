@@ -6,7 +6,7 @@
  */
 
 import Env from '@ioc:Adonis/Core/Env'
-import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
+import type { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
 
 const databaseConfig: DatabaseConfig = {
 	/*
@@ -24,25 +24,29 @@ const databaseConfig: DatabaseConfig = {
 	connections: {
 		/*
     |--------------------------------------------------------------------------
-    | MySQL config
+    | PostgreSQL config
     |--------------------------------------------------------------------------
     |
-    | Configuration for MySQL database. Make sure to install the driver
+    | Configuration for PostgreSQL database. Make sure to install the driver
     | from npm when using this connection
     |
-    | npm i mysql
+    | npm i pg
     |
     */
 		pg: {
 			client: 'pg',
 			connection: {
-				host: Env.get('DB_HOST', '127.0.0.1') as string,
-				port: Number(Env.get('DB_PORT', 5432)),
-				user: Env.get('DB_USER', 'root') as string,
-				password: Env.get('DB_PASSWORD', '') as string,
-				database: Env.get('DB_NAME', 'petmate') as string,
+				host: Env.get('PG_HOST'),
+				port: Env.get('PG_PORT'),
+				user: Env.get('PG_USER'),
+				password: Env.get('PG_PASSWORD', ''),
+				database: Env.get('PG_DB_NAME'),
 			},
-			healthCheck: true,
+			migrations: {
+				naturalSort: true,
+			},
+			healthCheck: false,
+			debug: false,
 		},
 	},
 }
