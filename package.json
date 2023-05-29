@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "node ace serve --watch",
-    "build": "node ace build --production --ignore-ts-errors",
+    "build": "yarn db && node ace build --production --ignore-ts-errors",
     "start": "node build/server.js",
     "db": "node ace migration:rollback && node ace migration:run"
   },
