@@ -2,16 +2,22 @@ name: petmate
 
 type: 'nodejs:18'
 
+build:
+    flavor: none
+
 mounts:
   'web/uploads':
     source: local
     source_path: uploads
+    
 disk: 2048
 
 hooks:
     build: |
-        npm run build        
+        corepack yarn install   
+        yarn build        
 
 web:
   commands: 
     start: "node build/server.js"
+         
