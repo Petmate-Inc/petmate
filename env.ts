@@ -32,4 +32,9 @@ export default Env.rules({
 	CLOUDINARY_CLOUD_NAME: Env.schema.string(),
 	CLOUDINARY_API_KEY: Env.schema.string(),
 	CLOUDINARY_API_SECRET: Env.schema.string(),
+	PG_HOST: Env.schema.string({ format: 'host' }),
+	PG_PORT: Env.schema.number(),
+	PG_USER: Env.schema.string(),
+	PG_PASSWORD: Env.schema.string.optional(),
+	PG_DB_NAME: Env.schema.string(),
 })
