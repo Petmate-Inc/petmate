@@ -659,24 +659,39 @@ export default class AuthController {
 					'no email address associated with this account, try creating account with email and password',
 				)
 			}
-			const user = await User.firstOrCreate(
-				{
-					email: googleUser.email,
-				},
-				{
-					status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
-					rememberMeToken: googleUser.token.token,
-				},
-			)
+
+			let userExists: User | null
+
+			userExists = await User.query().where('email', googleUser.email).first()
+
+			if (!userExists) {
+				userExists = new User()
+				userExists.email = googleUser.email
+				userExists.rememberMeToken = googleUser.token.token
+				userExists.status =
+					googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending'
+
+				await userExists.save()
+			}
+
+			// const user = await User.firstOrCreate(
+			// 	{
+			// 		email: googleUser.email,
+			// 	},
+			// 	{
+			// 		status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
+			// 		rememberMeToken: googleUser.token.token,
+			// 	},
+			// )
 			/**
 			 * Login user using the web guard
 			 */
-			await auth.use('api').login(user)
+			await auth.use('api').login(userExists)
 
 			return successfulResponse({
 				response,
 				message: 'successfuly handled google auth callback',
-				data: { user },
+				data: { userExists },
 			})
 		} catch (error) {
 			Logger.error({ err: error }, 'Bad request')
