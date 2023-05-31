@@ -612,57 +612,34 @@ export default class AuthController {
 		try {
 			const google = ally.use('google')
 
-			/**
-			 * User has explicitly denied the login request
-			 */
 			if (google.accessDenied()) {
 				Logger.error({ err: new Error('Access denied') }, 'Access with google auth was denied')
-
 				throw new Error('Access was denied')
 			}
 
-			/**
-			 * Unable to verify the CSRF state
-			 */
 			if (google.stateMisMatch()) {
 				Logger.error({ err: new Error('Mismatched error') }, 'Request expired. Retry again')
-
 				throw new Error('Request expired. Retry again')
 			}
 
-			/**
-			 * There was an unknown error during the redirect
-			 */
 			if (google.hasError()) {
-				Logger.error({ err: new Error('unkown error') }, 'Google error not specified')
-
+				Logger.error({ err: new Error('unknown error') }, 'Google error not specified')
 				throw new Error(google.getError() ?? 'Error not specified')
 			}
 
-			/**
-			 * Finally, access the user
-			 */
 			const googleUser = await google.user()
-
-			/**
-			 * Find the user by email or create
-			 * a new one
-			 */
 
 			if (!googleUser.email) {
 				Logger.error(
-					{ err: new Error('Email Not found') },
-					'no email address associated with this account, try creating account with email and password',
+					{ err: new Error('Email not found') },
+					'No email address associated with this account, try creating an account with email and password',
 				)
-
 				throw new Error(
-					'no email address associated with this account, try creating account with email and password',
+					'No email address associated with this account, try creating an account with email and password',
 				)
 			}
 
-			let userExists: User | null
-
-			userExists = await User.query().where('email', googleUser.email).first()
+			let userExists: User | null = await User.query().where('email', googleUser.email).first()
 
 			if (!userExists) {
 				userExists = new User()
@@ -670,35 +647,25 @@ export default class AuthController {
 				userExists.rememberMeToken = googleUser.token.token
 				userExists.status =
 					googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending'
-
 				await userExists.save()
+
+				// Refresh the user object to retrieve the ID
+				await userExists.refresh()
 			}
 
-			// const user = await User.firstOrCreate(
-			// 	{
-			// 		email: googleUser.email,
-			// 	},
-			// 	{
-			// 		status: googleUser.emailVerificationState === 'verified' ? 'approved' : 'pending',
-			// 		rememberMeToken: googleUser.token.token,
-			// 	},
-			// )
-			/**
-			 * Login user using the web guard
-			 */
+			// Login the user using the web guard
 			await auth.use('api').login(userExists)
 
 			return successfulResponse({
 				response,
-				message: 'successfuly handled google auth callback',
+				message: 'Successfully handled Google auth callback',
 				data: { userExists },
 			})
 		} catch (error) {
 			Logger.error({ err: error }, 'Bad request')
-
 			return badRequestResponse({
 				response,
-				message: 'failed to handle google auth callback',
+				message: 'Failed to handle Google auth callback',
 				error,
 			})
 		}
