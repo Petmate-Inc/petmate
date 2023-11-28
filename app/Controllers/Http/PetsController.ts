@@ -57,10 +57,33 @@ export default class PetsController {
 
 			const res = await pets.whereNull('deleted_at').preload('owner').preload('pictures')
 
+			const formattedResponse = res.map((pet) => {
+				return {
+					uuid: pet.uuid,
+					id: pet.id,
+					name: pet.name,
+					breeder: pet.owner.firstName + ' ' + pet.owner.lastName,
+					age: pet.age,
+					location: pet.owner.address,
+					breed: pet.breed,
+					breed_group: pet.classification,
+					image: pet.pictures.find((item) => item.isPrimary)?.imageUrl,
+					gallery: pet.pictures.map((data) => data?.imageUrl),
+					age_period: 'months',
+					classification: 'dog',
+					weight: null,
+					color: 'black and brown',
+					gender: 'male',
+					verification_status: 'unverified',
+					ownerId: pet.ownerId,
+					owner: pet.owner,
+				}
+			})
+
 			return successfulResponse({
 				response,
 				message: 'successfully fetched all pets',
-				data: res,
+				data: formattedResponse,
 			})
 		} catch (error) {
 			Logger.error({ err: error }, 'Failed to fetch all pets')

@@ -85,8 +85,8 @@ export default class AuthController {
 				},
 			})
 		} catch (error) {
-			console.log('login error', error.messages)
-			Logger.error({ err: error.messages }, 'The Login us unsuccessful')
+			console.log('login error', error)
+			Logger.error({ err: error }, 'The Login is unsuccessful')
 			return badRequestResponse({
 				response,
 				message: 'Unsuccessul Login',
